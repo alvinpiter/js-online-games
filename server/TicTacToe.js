@@ -18,6 +18,10 @@ class TicTacToe {
     return this.players
   }
 
+  getNumberOfPlayers() {
+    return 2
+  }
+
   getCurrentPlayer() {
     return this.currentPlayer
   }
@@ -35,9 +39,12 @@ class TicTacToe {
     return (this.currentPlayer === 'X' ? 'O' : 'X')
   }
 
-  move(player, row, column) {
+  move(player, {row, column}) {
     if (player !== this.currentPlayer)
       throw new Error("It's not your turn")
+
+    if (row === undefined || column === undefined)
+      throw new Error("Invalid move")
 
     if (row < 0 || row >= 3 || column < 0 || column >= 3)
       throw new Error("Invalid move")

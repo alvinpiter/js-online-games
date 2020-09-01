@@ -29,7 +29,7 @@ test('getPlayers', () => {
 test('move with invalid player', () => {
   const game = new TicTacToe()
 
-  const move = () => game.move('O', 0, 0)
+  const move = () => game.move('O', {row: 0, column: 0})
 
   expect(move).toThrow("It's not your turn")
 })
@@ -38,10 +38,10 @@ test('move with invalid row or column', () => {
   const game = new TicTacToe()
 
   const moves = [
-    () => game.move('X', -1, 0),
-    () => game.move('X', 3, 0),
-    () => game.move('X', 0, -1),
-    () => game.move('X', 0, 3)
+    () => game.move('X', {row: -1, column: 0}),
+    () => game.move('X', {row: 3, column: 0}),
+    () => game.move('X', {row: 0, column: -1}),
+    () => game.move('X', {row: 0, column: 3})
   ]
 
   for (let move of moves) {
@@ -52,9 +52,9 @@ test('move with invalid row or column', () => {
 test('move to occupied cell', () => {
   const game = new TicTacToe()
 
-  game.move('X', 0, 0)
+  game.move('X', {row: 0, column: 0})
 
-  const move = () => game.move('O', 0, 0)
+  const move = () => game.move('O', {row: 0, column: 0})
 
   expect(move).toThrow("Cell is not empty")
 })
@@ -62,7 +62,7 @@ test('move to occupied cell', () => {
 test('move success', () => {
   const game = new TicTacToe()
 
-  game.move('X', 0, 0)
+  game.move('X', {row: 0, column: 0})
 
   expect(game.getBoard()).toEqual([
     ['X', null, null],
