@@ -11,9 +11,11 @@ export default class RoomPage extends React.Component {
     this.socket = null
 
     this.state = {
-      nicknameTextFieldValue: null,
+      nicknameTextFieldValue: "",
       nicknameError: null,
-      nickname: null
+      nickname: null,
+      messageHistories: [],
+      messageTextFieldValue: ""
     }
   }
 
@@ -36,6 +38,15 @@ export default class RoomPage extends React.Component {
         nicknameError: message
       })
     })
+
+    this.socket.on('BROADCAST_MESSAGE', data => {
+      let newMessageHistories = this.state.messageHistories.slice()
+      newMessageHistories.push(data)
+
+      this.setState({
+        messageHistories: newMessageHistories
+      })
+    })
   }
 
   onChangeNicknameTextField = (event) => {
@@ -54,6 +65,28 @@ export default class RoomPage extends React.Component {
         }
       }
     )
+  }
+
+  onChangeMessageTextField = (event) => {
+    this.setState({
+      messageTextFieldValue: event.target.value
+    })
+  }
+
+  onSendMessage = () => {
+    this.socket.emit(
+      'SEND_MESSAGE',
+      {
+        roomID: this.roomID,
+        payload: {
+          message: this.state.messageTextFieldValue
+        }
+      }
+    )
+
+    this.setState({
+      messageTextFieldValue: ""
+    })
   }
 
   render() {
@@ -75,6 +108,34 @@ export default class RoomPage extends React.Component {
       > Submit </Button>
     </div>
 
+    const chatBox =
+    <div className="space-y-2 w-1/3">
+      <h1 className="text-center"> Chat Box </h1>
+      <div className="w-full h-64 overflow-auto bg-gray-400">
+        {
+          this.state.messageHistories.map((msg, index) => {
+            return <p key={index}>{msg.nickname}: {msg.message}</p>
+          })
+        }
+      </div>
+
+      <div className="flex">
+        <TextField
+          variant="outlined"
+          placeholder="Write a message..."
+          className="w-3/4"
+          onChange={this.onChangeMessageTextField}
+          value={this.state.messageTextFieldValue}
+        />
+        <Button
+          color="primary"
+          variant="contained"
+          className="w-1/4"
+          onClick={this.onSendMessage}
+        > Send </Button>
+      </div>
+    </div>
+
     return (
       <div>
         {
@@ -85,7 +146,7 @@ export default class RoomPage extends React.Component {
         {
           this.state.nickname === null ?
           null :
-          <h1> Hello, {this.state.nickname} </h1>
+          chatBox
         }
       </div>
     )

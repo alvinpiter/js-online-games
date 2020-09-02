@@ -33,6 +33,12 @@ app.post('/rooms', (req, res) => {
   }
 })
 
+function log(command, data) {
+  console.log(command)
+  console.log(data)
+  console.log('\n')
+}
+
 io.on('connection', socket => {
   const socketID = socket.client.id
   console.log(`new socket connection! id: ${socketID}\n`)
@@ -42,9 +48,7 @@ io.on('connection', socket => {
   })
 
   socket.on('JOIN_ROOM', data => {
-    console.log('JOIN_ROOM')
-    console.log(data)
-    console.log('\n')
+    log('JOIN_ROOM', data)
 
     const roomID = data.roomID
     const nickname = data.payload.nickname
@@ -53,9 +57,26 @@ io.on('connection', socket => {
 
     try {
       const nick = room.addSocket(socketID, nickname)
+      socket.join(roomID)
       socket.emit('JOIN_ROOM_ACCEPTED', { nickname: nick })
     } catch (e) {
       socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })
+    }
+  })
+
+  socket.on('SEND_MESSAGE', data => {
+    log('SEND_MESSAGE', data)
+
+    const roomID = data.roomID
+    const message = data.payload.message
+
+    const room = roomManager.get(roomID)
+
+    try {
+      const result = room.sendMessage(socketID, message)
+      io.to(roomID).emit('BROADCAST_MESSAGE', result)
+    } catch (e) {
+      socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })
     }
   })
 })
