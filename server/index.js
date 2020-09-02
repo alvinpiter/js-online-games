@@ -34,10 +34,29 @@ app.post('/rooms', (req, res) => {
 })
 
 io.on('connection', socket => {
-  console.log(`new socket connection! id: ${socket.client.id}`)
+  const socketID = socket.client.id
+  console.log(`new socket connection! id: ${socketID}\n`)
 
   socket.on('disconnect', () => {
-    console.log(`socket ${socket.client.id} disconnected`)
+    console.log(`socket ${socketID} disconnected\n`)
+  })
+
+  socket.on('JOIN_ROOM', data => {
+    console.log('JOIN_ROOM')
+    console.log(data)
+    console.log('\n')
+
+    const roomID = data.roomID
+    const nickname = data.payload.nickname
+
+    const room = roomManager.get(roomID)
+
+    try {
+      const nick = room.addSocket(socketID, nickname)
+      socket.emit('JOIN_ROOM_ACCEPTED', { nickname: nick })
+    } catch (e) {
+      socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })
+    }
   })
 })
 
