@@ -64,6 +64,7 @@ export default class RoomPage extends React.Component {
         variant="outlined"
         placeholder="Specify your nickname"
         onChange={this.onChangeNicknameTextField}
+        error={this.state.nicknameError !== null}
         helperText={this.state.nicknameError}
       />
 
