@@ -1,6 +1,9 @@
 const cors = require('cors')
 const express = require('express')
 const app = express()
+const http = require('http').createServer(app)
+const io = require('socket.io')(http)
+
 const port = 5000
 const RoomManager = require('./RoomManager')
 const roomManager = new RoomManager()
@@ -30,6 +33,14 @@ app.post('/rooms', (req, res) => {
   }
 })
 
-app.listen(port, () => {
+io.on('connection', socket => {
+  console.log(`new socket connection! id: ${socket.client.id}`)
+
+  socket.on('disconnect', () => {
+    console.log(`socket ${socket.client.id} disconnected`)
+  })
+})
+
+http.listen(port, () => {
   console.log(`Listening on port ${port}`)
 })
