@@ -1,11 +1,10 @@
 import React from 'react';
-import Button from '@material-ui/core/Button'
+import HomePage from './components/HomePage'
 
 function App() {
   return (
     <div>
-      <p className="text-green-500">Tailwind works</p>
-      <Button variant="contained" color="primary">MUI works</Button>
+      <HomePage />
     </div>
   );
 }

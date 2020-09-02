@@ -1,7 +1,7 @@
 const TicTacToe = require('./TicTacToe')
 
 class Room {
-  constructor(gameName) {
+  constructor(gameCode) {
     this.nicknamesSet = new Set()
     this.nicknamesMap = new Map() //maps socketID to nickname
     this.playersMap = new Map() //maps socketID to a player in a game
@@ -9,7 +9,7 @@ class Room {
     this.game = null
     this.playing = false
 
-    switch (gameName) {
+    switch (gameCode) {
       case 'TICTACTOE':
         this.game = new TicTacToe()
         break
