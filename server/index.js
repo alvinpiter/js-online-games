@@ -79,6 +79,29 @@ io.on('connection', socket => {
       socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })
     }
   })
+
+  socket.on('START_GAME', data => {
+    log('START_GAME', data)
+
+    const roomID = data.roomID
+
+    const room = roomManager.get(roomID)
+
+    try {
+      const result = room.startGame()
+      const currentPlayer = result.currentPlayer
+
+      for (let socketID in result.playersMap) {
+        const player = result.playersMap[socketID]
+        io.to(socketID).emit('START_GAME_ACCEPTED', {
+          currentPlayer,
+          player
+        })
+      }
+    } catch (e) {
+      socket.emit('START_GAME_REJECTED', { message: e.toString() })
+    }
+  })
 })
 
 http.listen(port, () => {

@@ -2,6 +2,7 @@ import React from 'react'
 import io from 'socket.io-client'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import TicTacToeBoard from './TicTacToeBoard'
 
 export default class RoomPage extends React.Component {
   constructor(props) {
@@ -47,6 +48,16 @@ export default class RoomPage extends React.Component {
         messageHistories: newMessageHistories
       })
     })
+
+    this.socket.on('START_GAME_REJECTED', data => {
+      console.log('START_GAME_REJECTED')
+      console.log(data)
+    })
+
+    this.socket.on('START_GAME_ACCEPTED', data => {
+      console.log('START_GAME_ACCEPTED')
+      console.log(data)
+    })
   }
 
   onChangeNicknameTextField = (event) => {
@@ -87,6 +98,14 @@ export default class RoomPage extends React.Component {
     this.setState({
       messageTextFieldValue: ""
     })
+  }
+
+  onStartGame = () => {
+    this.socket.emit('START_GAME', { roomID: this.roomID })
+  }
+
+  onClickTicTacToeCell = (row, column) => {
+    console.log({row, column})
   }
 
   render() {
@@ -136,6 +155,20 @@ export default class RoomPage extends React.Component {
       </div>
     </div>
 
+    const gameDiv =
+    <div className="w-2/3 bg-blue-200">
+      <TicTacToeBoard
+        board={[['X', null, null], [null, 'O', null], [null, null, null]]}
+        onClickCell={this.onClickTicTacToeCell}
+      />
+    </div>
+
+    const chatBoxAndGameDiv =
+    <div className="flex space-x-2">
+      {chatBox}
+      {gameDiv}
+    </div>
+
     return (
       <div>
         {
@@ -143,10 +176,15 @@ export default class RoomPage extends React.Component {
           nicknameForm :
           null
         }
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={this.onStartGame}
+        > Play </Button>
         {
           this.state.nickname === null ?
           null :
-          chatBox
+          chatBoxAndGameDiv
         }
       </div>
     )
