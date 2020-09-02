@@ -16,8 +16,17 @@ export default class RoomPage extends React.Component {
       nicknameError: null,
       nickname: null,
       messageHistories: [],
-      messageTextFieldValue: ""
+      messageTextFieldValue: "",
+      player: null,
+      currentPlayer: null,
+      board: [[null, null, null], [null, null, null], [null, null, null]]
     }
+  }
+
+  resetBoard() {
+    this.setState({
+      board: [[null, null, null], [null, null, null], [null, null, null]]
+    })
   }
 
   componentDidMount() {
@@ -55,8 +64,36 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
-      console.log('START_GAME_ACCEPTED')
-      console.log(data)
+      this.resetBoard()
+
+      const { player, currentPlayer } = data
+      this.setState({
+        player,
+        currentPlayer
+      })
+    })
+
+    this.socket.on('MOVE_ACCEPTED', data => {
+      const { lastMove, currentPlayer, endGameInfo } = data
+
+      let newBoard = []
+      for (let row = 0; row < 3; row++)
+        newBoard.push(this.state.board[row].slice())
+
+      newBoard[lastMove.row][lastMove.column] = lastMove.player
+
+      this.setState({
+        currentPlayer,
+        board: newBoard
+      })
+
+      if (endGameInfo === undefined) {
+        //Implement this later
+      }
+    })
+
+    this.socket.on('MOVE_REJECTED', data => {
+      console.log('MOVE_REJECTED', data)
     })
   }
 
@@ -105,7 +142,13 @@ export default class RoomPage extends React.Component {
   }
 
   onClickTicTacToeCell = (row, column) => {
-    console.log({row, column})
+    this.socket.emit(
+      'MOVE',
+      {
+        roomID: this.roomID,
+        payload: { row, column }
+      }
+    )
   }
 
   render() {
@@ -155,10 +198,20 @@ export default class RoomPage extends React.Component {
       </div>
     </div>
 
+    const turnInfo =
+    <div>
+      {
+        this.state.player === this.state.currentPlayer ?
+        <p> It's your turn </p> :
+        <p> It's your opponent's turn </p>
+      }
+    </div>
+
     const gameDiv =
     <div className="w-2/3 bg-blue-200">
+      {turnInfo}
       <TicTacToeBoard
-        board={[['X', null, null], [null, 'O', null], [null, null, null]]}
+        board={this.state.board}
         onClickCell={this.onClickTicTacToeCell}
       />
     </div>

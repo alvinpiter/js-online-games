@@ -102,6 +102,21 @@ io.on('connection', socket => {
       socket.emit('START_GAME_REJECTED', { message: e.toString() })
     }
   })
+
+  socket.on('MOVE', data => {
+    log('MOVE', data)
+
+    const roomID = data.roomID
+
+    const room = roomManager.get(roomID)
+
+    try {
+      const result = room.move(socketID, data.payload)
+      io.to(roomID).emit('MOVE_ACCEPTED', result)
+    } catch (e) {
+      socket.emit('MOVE_REJECTED', { message: e.toString() })
+    }
+  })
 })
 
 http.listen(port, () => {
