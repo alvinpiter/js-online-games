@@ -81,7 +81,7 @@ function GamePicker(props) {
         options={games}
         getOptionLabel={option => option.name}
         style={{ width: 300 }}
-        renderInput={params => <TextField {...params} variant="outlined" />}
+        renderInput={params => <TextField {...params} variant="outlined" placeholder="Choose a game" />}
         onChange={onChangeGame}
       />
 
