@@ -1,11 +1,13 @@
 const TicTacToe = require('./TicTacToe')
+const getRandomColor = require('./Colorize')
 
 class Room {
   constructor(gameCode) {
     this.nicknamesSet = new Set()
-    this.nicknamesMap = new Map() //maps socketID to nickname
+    this.colorsSet = new Set()
+    this.usersMap = new Map() // maps socketID to a user. A user is an object { nickname: .., color: ..}
     this.playersMap = new Map() //maps socketID to a player in a game
-    this.messageHistories = [] //{nickname: .., message: ..}
+    this.messageHistories = [] //{user: .., text: ..}
     this.game = null
     this.playing = false
 
@@ -32,10 +34,16 @@ class Room {
     if (this.getNumberOfPlayers() === this.game.getNumberOfPlayers())
       throw new Error('Room is full')
 
-    this.nicknamesSet.add(nickname)
-    this.nicknamesMap.set(socketID, nickname)
+    const user = {
+      nickname,
+      color: getRandomColor(this.colorsSet)
+    }
 
-    return nickname
+    this.nicknamesSet.add(user.nickname)
+    this.colorsSet.add(user.color)
+    this.usersMap.set(socketID, user)
+
+    return user
   }
 
   /*
@@ -44,19 +52,16 @@ class Room {
     On success, it returns the nickname
   */
   removeSocket(socketID) {
-    const nickname = this.nicknamesMap.get(socketID)
-    if (nickname === undefined)
+    const user = this.usersMap.get(socketID)
+    if (user === undefined)
       throw new Error('socketID does not exist')
     else {
-      this.nicknamesSet.delete(nickname)
-      this.nicknamesMap.delete(socketID)
+      this.nicknamesSet.delete(user.nickname)
+      this.colorsSet.delete(user.color)
+      this.usersMap.delete(socketID)
 
-      return nickname
+      return user
     }
-  }
-
-  getNickname(socketID) {
-    return this.nicknamesMap.get(socketID)
   }
 
   getPlayer(socketID) {
@@ -81,19 +86,21 @@ class Room {
   /*
     If the socketID does not exist, throw an error.
 
-    On success, return an object with format {nickname: ..., message: ...}
+    On success, return an object with format {user: ..., text: ...}
   */
-  sendMessage(socketID, message) {
-    const nickname = this.nicknamesMap.get(socketID)
-    if (nickname === undefined)
+  sendMessage(socketID, text) {
+    const user = this.usersMap.get(socketID)
+    if (user === undefined)
       throw new Error('socketID does not exist')
     else {
-      this.messageHistories.push({
-        nickname,
-        message
-      })
+      const message = {
+        user,
+        text
+      }
 
-      return {nickname, message}
+      this.messageHistories.push(message)
+
+      return message
     }
   }
 
@@ -107,7 +114,7 @@ class Room {
 
     let playersMap = {}
 
-    const socketIDs = Array.from(this.nicknamesMap).map(entry => entry[0])
+    const socketIDs = Array.from(this.usersMap).map(entry => entry[0])
     const players = this.game.getPlayers()
     socketIDs.forEach((socketID, index) => {
       playersMap[socketID] = players[index]

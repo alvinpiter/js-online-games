@@ -25,8 +25,10 @@ test('addSocket when room is full', () => {
 test('addSocket success', () => {
   const room = new Room('TICTACTOE')
 
-  expect(room.addSocket(1, 'alvin')).toEqual('alvin')
-  expect(room.getNickname(1)).toEqual('alvin')
+  const user = room.addSocket(1, 'alvin')
+
+  expect(user.nickname).toEqual('alvin')
+  expect(user.color).not.toEqual(undefined)
   expect(room.getNumberOfPlayers()).toEqual(1)
 })
 
@@ -40,8 +42,11 @@ test('removeSocket success', () => {
   const room = new Room('TICTACTOE')
 
   room.addSocket(1, 'alvin')
-  expect(room.removeSocket(1)).toEqual('alvin')
-  expect(room.getNickname(1)).toEqual(undefined)
+
+  const user = room.removeSocket(1)
+
+  expect(user.nickname).toEqual('alvin')
+  expect(user.color).not.toEqual(undefined)
   expect(room.getNumberOfPlayers()).toEqual(0)
 })
 
@@ -59,10 +64,22 @@ test('sendMessage success', () => {
 
   room.sendMessage(1, 'from alvin')
 
-  expect(room.sendMessage(2, 'from teddy')).toEqual({nickname: 'teddy', message: 'from teddy'})
-  expect(room.getMessageHistories()).toEqual([
-    {nickname: 'alvin', message: 'from alvin'},
-    {nickname: 'teddy', message: 'from teddy'}
+  const message = room.sendMessage(2, 'from teddy')
+  expect(message).toEqual({
+    user: { nickname: 'teddy', color: expect.any(String) },
+    text: 'from teddy'
+  })
+
+  const messageHistories = room.getMessageHistories()
+  expect(messageHistories).toEqual([
+    {
+      user: { nickname: 'alvin', color: expect.any(String) },
+      text: 'from alvin'
+    },
+    {
+      user: { nickname: 'teddy', color: expect.any(String) },
+      text: 'from teddy'
+    }
   ])
 })
 

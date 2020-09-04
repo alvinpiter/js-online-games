@@ -3,6 +3,7 @@ import io from 'socket.io-client'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import TicTacToeBoard from './TicTacToeBoard'
+import { getTextColorClass } from '../utils/color'
 
 export default class RoomPage extends React.Component {
   constructor(props) {
@@ -14,7 +15,7 @@ export default class RoomPage extends React.Component {
     this.state = {
       nicknameTextFieldValue: "",
       nicknameError: null,
-      nickname: null,
+      user: null,
       messageHistories: [],
       messageTextFieldValue: "",
       player: null,
@@ -33,11 +34,9 @@ export default class RoomPage extends React.Component {
     this.socket = io("http://localhost:5000")
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
-      const { nickname } = data
-
       this.setState({
         nicknameError: null,
-        nickname: nickname
+        user: data
       })
     })
 
@@ -173,11 +172,14 @@ export default class RoomPage extends React.Component {
     const chatBox =
     <div className="space-y-2 w-1/3">
       <h1 className="text-center"> Chat Box </h1>
-      <div className="w-full h-64 overflow-auto bg-gray-400">
+      <div className="w-full h-64 overflow-auto bg-gray-200">
         {
-          this.state.messageHistories.map((msg, index) => {
-            return <p key={index}>{msg.nickname}: {msg.message}</p>
-          })
+          this.state.messageHistories.map((msg, index) =>
+            <p>
+              <span className={`${getTextColorClass(msg.user.color)} font-bold`}>{msg.user.nickname} </span>
+              : {msg.text}
+            </p>
+          )
         }
       </div>
 
@@ -225,7 +227,7 @@ export default class RoomPage extends React.Component {
     return (
       <div>
         {
-          this.state.nickname === null ?
+          this.state.user === null ?
           nicknameForm :
           null
         }
@@ -235,7 +237,7 @@ export default class RoomPage extends React.Component {
           onClick={this.onStartGame}
         > Play </Button>
         {
-          this.state.nickname === null ?
+          this.state.user === null ?
           null :
           chatBoxAndGameDiv
         }

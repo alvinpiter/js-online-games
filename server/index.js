@@ -56,9 +56,9 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const nick = room.addSocket(socketID, nickname)
+      const user = room.addSocket(socketID, nickname)
       socket.join(roomID)
-      socket.emit('JOIN_ROOM_ACCEPTED', { nickname: nick })
+      socket.emit('JOIN_ROOM_ACCEPTED', user)
     } catch (e) {
       socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })
     }
