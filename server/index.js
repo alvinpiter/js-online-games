@@ -51,9 +51,12 @@ io.on('connection', socket => {
     const roomID = socketRoomID.get(socketID)
     const room = roomManager.get(roomID)
 
-    const user = room.removeSocket(socketID)
-
-    io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
+    try {
+      const user = room.removeSocket(socketID)
+      io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
+    } catch (e) {
+      console.log("eror")
+    }
   })
 
   socket.on('JOIN_ROOM', data => {

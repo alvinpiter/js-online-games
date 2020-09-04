@@ -5,6 +5,13 @@ import Button from '@material-ui/core/Button'
 import TicTacToeBoard from './TicTacToeBoard'
 import { getTextColorClass } from '../utils/color'
 
+/*
+There are 4 possible stages:
+* USER_OUT -> user has not joined the room
+* USER_IN -> user has joined the room
+* USER_PLAYING -> users are playing
+* GAME_OVER -> game over
+*/
 export default class RoomPage extends React.Component {
   constructor(props) {
     super(props)
@@ -21,7 +28,9 @@ export default class RoomPage extends React.Component {
       messageTextFieldValue: "",
       player: null,
       currentPlayer: null,
-      board: [[null, null, null], [null, null, null], [null, null, null]]
+      board: [[null, null, null], [null, null, null], [null, null, null]],
+      stage: 'USER_OUT',
+      startGameError: null
     }
   }
 
@@ -41,7 +50,8 @@ export default class RoomPage extends React.Component {
         nicknameError: null,
         user,
         users,
-        messageHistories
+        messageHistories,
+        stage: 'USER_IN'
       })
     })
 
@@ -84,8 +94,9 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_REJECTED', data => {
-      console.log('START_GAME_REJECTED')
-      console.log(data)
+      this.setState({
+        startGameError: data.message
+      })
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
@@ -94,7 +105,8 @@ export default class RoomPage extends React.Component {
       const { player, currentPlayer } = data
       this.setState({
         player,
-        currentPlayer
+        currentPlayer,
+        startGameError: null
       })
     })
 
@@ -196,7 +208,7 @@ export default class RoomPage extends React.Component {
     </div>
 
     const chatBox =
-    <div className="space-y-2 w-1/3">
+    <div className="space-y-2">
       <h1 className="text-center"> Chat Box </h1>
       <div className="w-full bg-gray-200">
         Online users:
@@ -244,7 +256,7 @@ export default class RoomPage extends React.Component {
     </div>
 
     const gameDiv =
-    <div className="w-2/3 bg-blue-200">
+    <div className="bg-blue-200">
       {turnInfo}
       <TicTacToeBoard
         board={this.state.board}
@@ -252,29 +264,86 @@ export default class RoomPage extends React.Component {
       />
     </div>
 
-    const chatBoxAndGameDiv =
-    <div className="flex space-x-2">
-      {chatBox}
-      {gameDiv}
-    </div>
-
-    return (
-      <div>
-        {
-          this.state.user === null ?
-          nicknameForm :
-          null
-        }
+    const playButtonDiv =
+    <div className="w-full">
+      <div className="w-full flex justify-center p-4 pb-0">
         <Button
           color="primary"
           variant="contained"
           onClick={this.onStartGame}
+          className="w-1/2"
         > Play </Button>
+      </div>
+      <div className="w-full flex justify-center">
         {
-          this.state.user === null ?
-          null :
-          chatBoxAndGameDiv
+          this.state.startGameError !== null ?
+          <p className="text-red-500">{this.state.startGameError}</p> :
+          null
         }
+      </div>
+    </div>
+
+    const resignButtonDiv =
+    <div display="flex justify-center">
+      <Button
+        color="primary"
+        variant="contained"
+        onClick={this.onStartGame}
+      > Resign </Button>
+    </div>
+
+    const userOutView = nicknameForm
+    const userInView =
+    <div className="flex space-x-2">
+      <div className="w-1/3">
+        {chatBox}
+      </div>
+
+      <div className="w-2/3 bg-green-200">
+        {playButtonDiv}
+      </div>
+    </div>
+
+    const userPlayingView =
+    <div className="flex space-x-2">
+      <div className="w-1/3">
+        {chatBox}
+      </div>
+
+      <div className="w-2/3">
+        {resignButtonDiv}
+        {gameDiv}
+      </div>
+    </div>
+
+    const gameOverView =
+    <div className="flex space-x-2">
+      <div className="w-1/3">
+        {chatBox}
+      </div>
+
+      <div className="w-2/3">
+        {playButtonDiv}
+        {gameDiv}
+      </div>
+    </div>
+
+    const renderByStage = (stage) => {
+      switch (stage) {
+        case 'USER_OUT':
+          return userOutView
+        case 'USER_IN':
+          return userInView
+        case 'USER_PLAYING':
+          return userPlayingView
+        default:
+          return gameOverView
+      }
+    }
+
+    return (
+      <div>
+        {renderByStage(this.state.stage)}
       </div>
     )
   }
