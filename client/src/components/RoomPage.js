@@ -30,7 +30,9 @@ export default class RoomPage extends React.Component {
       currentPlayer: null,
       board: [[null, null, null], [null, null, null], [null, null, null]],
       stage: 'USER_OUT',
-      startGameError: null
+      startGameError: null,
+      gameOverByResignation: false,
+      winner: null
     }
   }
 
@@ -100,18 +102,20 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
+      console.log(data)
       this.resetBoard()
 
       const { player, currentPlayer } = data
       this.setState({
         player,
         currentPlayer,
-        startGameError: null
+        startGameError: null,
+        stage: 'USER_PLAYING'
       })
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
-      const { lastMove, currentPlayer, endGameInfo } = data
+      const { lastMove, currentPlayer, gameOverInfo } = data
 
       let newBoard = []
       for (let row = 0; row < 3; row++)
@@ -124,13 +128,25 @@ export default class RoomPage extends React.Component {
         board: newBoard
       })
 
-      if (endGameInfo === undefined) {
-        //Implement this later
+      if (gameOverInfo !== undefined) {
+        this.setState({
+          stage: 'GAME_OVER',
+          gameOverByResignation: false,
+          winner: gameOverInfo.winner
+        })
       }
     })
 
     this.socket.on('MOVE_REJECTED', data => {
       console.log('MOVE_REJECTED', data)
+    })
+
+    this.socket.on('RESIGN_ACCEPTED', data => {
+      this.setState({
+        stage: 'GAME_OVER',
+        gameOverByResignation: true,
+        winner: data.winner
+      })
     })
   }
 
@@ -176,6 +192,13 @@ export default class RoomPage extends React.Component {
 
   onStartGame = () => {
     this.socket.emit('START_GAME', { roomID: this.roomID })
+  }
+
+  onResignGame = () => {
+    const confirmation = window.confirm("Are you sure you want to resign?")
+    if (confirmation) {
+      this.socket.emit('RESIGN', { roomID: this.roomID })
+    }
   }
 
   onClickTicTacToeCell = (row, column) => {
@@ -248,16 +271,40 @@ export default class RoomPage extends React.Component {
 
     const turnInfo =
     <div>
+      <p className="text-center"> You are playing as <span className="font-bold">{this.state.player}</span></p>
       {
         this.state.player === this.state.currentPlayer ?
-        <p> It's your turn </p> :
-        <p> It's your opponent's turn </p>
+        <p className="text-center"> It's your turn </p> :
+        <p className="text-center"> It's your opponent's turn </p>
+      }
+    </div>
+
+    const resignationInfo =
+    <p className="text-center">
+      {
+        this.state.winner === this.state.player ?
+        'Your opponent resigned. You win!' :
+        'You resigned. You lose!'
+      }
+    </p>
+
+    let winnerInfo
+    if (this.state.winner === null)
+      winnerInfo = <p className="text-center"> Game over! It's a tie </p>
+    else
+      winnerInfo = <p className="text-center"> {this.state.winner === this.state.player ? 'You win!' : 'You lose!'} </p>
+
+    const gameOverInfo =
+    <div>
+      {
+        this.state.gameOverByResignation ?
+        resignationInfo :
+        winnerInfo
       }
     </div>
 
     const gameDiv =
-    <div className="bg-blue-200">
-      {turnInfo}
+    <div className="bg-blue-200 flex justify-center p-4">
       <TicTacToeBoard
         board={this.state.board}
         onClickCell={this.onClickTicTacToeCell}
@@ -284,11 +331,12 @@ export default class RoomPage extends React.Component {
     </div>
 
     const resignButtonDiv =
-    <div display="flex justify-center">
+    <div className="w-full flex justify-center p-4">
       <Button
         color="primary"
         variant="contained"
-        onClick={this.onStartGame}
+        onClick={this.onResignGame}
+        className="w-1/2"
       > Resign </Button>
     </div>
 
@@ -312,6 +360,7 @@ export default class RoomPage extends React.Component {
 
       <div className="w-2/3">
         {resignButtonDiv}
+        {turnInfo}
         {gameDiv}
       </div>
     </div>
@@ -324,6 +373,7 @@ export default class RoomPage extends React.Component {
 
       <div className="w-2/3">
         {playButtonDiv}
+        {gameOverInfo}
         {gameDiv}
       </div>
     </div>

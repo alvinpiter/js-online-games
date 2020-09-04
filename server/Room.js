@@ -100,6 +100,10 @@ class Room {
     }
   }
 
+  getOppositePlayer(player) {
+    return (player === 'X' ? 'O' : 'X')
+  }
+
   getUser(socketID) {
     return this.usersMap.get(socketID)
   }
@@ -126,6 +130,7 @@ class Room {
     })
 
     this.playing = true
+    this.game.reset()
 
     return {
       currentPlayer: this.game.getCurrentPlayer(),
@@ -137,11 +142,11 @@ class Room {
     If the game has not started, throw an error
     If invalid socketID, throw an error
     If game throw an error, re-throw the error
-    If game ended after a move, include endGameInfo in return value
+    If game ended after a move, include gameOverInfo in return value
 
     return value:
     {
-      endGameInfo: { winner: ... }, //this is optional
+      gameOverInfo: { winner: ... }, //this is optional
       lastMove: {
         player: ..,
         row: ..,
@@ -168,11 +173,19 @@ class Room {
       }
 
       if (this.game.hasEnded())
-        result.endGameInfo = { winner: this.game.getWinner() }
+        result.gameOverInfo = { winner: this.game.getWinner() }
 
       return result
     } catch (e) {
       throw e
+    }
+  }
+
+  resign(socketID) {
+    const player = this.playersMap.get(socketID)
+    this.playing = false
+    return {
+      winner: this.getOppositePlayer(player)
     }
   }
 }

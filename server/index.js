@@ -135,6 +135,21 @@ io.on('connection', socket => {
       socket.emit('MOVE_REJECTED', { message: e.toString() })
     }
   })
+
+  socket.on('RESIGN', data => {
+    log('RESIGN', data)
+
+    const roomID = data.roomID
+
+    const room = roomManager.get(roomID)
+
+    try {
+      const result = room.resign(socketID)
+      io.to(roomID).emit('RESIGN_ACCEPTED', result)
+    } catch (e) {
+      console.log(e)
+    }
+  })
 })
 
 http.listen(port, () => {
