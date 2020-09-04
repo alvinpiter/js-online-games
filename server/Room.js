@@ -104,6 +104,10 @@ class Room {
     }
   }
 
+  getUsers() {
+    return Array.from(this.usersMap).map(entry => entry[1])
+  }
+
   getMessageHistories() {
     return this.messageHistories
   }

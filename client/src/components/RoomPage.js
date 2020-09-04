@@ -16,6 +16,7 @@ export default class RoomPage extends React.Component {
       nicknameTextFieldValue: "",
       nicknameError: null,
       user: null,
+      users: [],
       messageHistories: [],
       messageTextFieldValue: "",
       player: null,
@@ -34,9 +35,22 @@ export default class RoomPage extends React.Component {
     this.socket = io("http://localhost:5000")
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
+      const { user, users, messageHistories } = data
+
       this.setState({
         nicknameError: null,
-        user: data
+        user,
+        users,
+        messageHistories
+      })
+    })
+
+    this.socket.on('JOIN_ROOM_ACCEPTED_BROADCAST', data => {
+      const newUsers = this.state.users.slice()
+      newUsers.push(data)
+
+      this.setState({
+        users: newUsers
       })
     })
 
@@ -172,6 +186,14 @@ export default class RoomPage extends React.Component {
     const chatBox =
     <div className="space-y-2 w-1/3">
       <h1 className="text-center"> Chat Box </h1>
+      <div className="w-full bg-gray-200">
+        Online users:
+        {
+          this.state.users.map(user =>
+            <span className={`ml-2 font-bold ${getTextColorClass(user.color)}`}>{user.nickname}</span>
+          )
+        }
+      </div>
       <div className="w-full h-64 overflow-auto bg-gray-200">
         {
           this.state.messageHistories.map((msg, index) =>
