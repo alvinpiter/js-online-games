@@ -55,11 +55,7 @@ class TicTacToe {
     this.board[row][column] = this.currentPlayer
     this.currentPlayer = this.getNextPlayer()
 
-    return {
-      player,
-      row,
-      column
-    }
+    return this.board
   }
 
   getWinner() {

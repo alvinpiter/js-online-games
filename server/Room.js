@@ -164,11 +164,11 @@ class Room {
       throw new Error('Invalid socketID')
 
     try {
-      const lastMove = this.game.move(player, payload)
+      const board = this.game.move(player, payload)
       const currentPlayer = this.game.getCurrentPlayer()
 
       let result = {
-        lastMove,
+        board,
         currentPlayer
       }
 

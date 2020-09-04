@@ -115,13 +115,13 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
-      const { lastMove, currentPlayer, gameOverInfo } = data
+      const { board, currentPlayer, gameOverInfo } = data
+
+      let numRow = board.length
 
       let newBoard = []
-      for (let row = 0; row < 3; row++)
-        newBoard.push(this.state.board[row].slice())
-
-      newBoard[lastMove.row][lastMove.column] = lastMove.player
+      for (let row = 0; row < numRow; row++)
+        newBoard.push(board[row].slice())
 
       this.setState({
         currentPlayer,
