@@ -7,6 +7,7 @@ const io = require('socket.io')(http)
 const port = 5000
 const RoomManager = require('./RoomManager')
 const roomManager = new RoomManager()
+const socketRoomID = new Map()
 
 app.use(express.json())
 app.use(cors())
@@ -41,10 +42,18 @@ function log(command, data) {
 
 io.on('connection', socket => {
   const socketID = socket.client.id
+
   console.log(`new socket connection! id: ${socketID}\n`)
 
   socket.on('disconnect', () => {
     console.log(`socket ${socketID} disconnected\n`)
+
+    const roomID = socketRoomID.get(socketID)
+    const room = roomManager.get(roomID)
+
+    const user = room.removeSocket(socketID)
+
+    io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
   })
 
   socket.on('JOIN_ROOM', data => {
@@ -59,6 +68,8 @@ io.on('connection', socket => {
       const users = room.getUsers()
       const user = room.addSocket(socketID, nickname)
       const messageHistories = room.getMessageHistories()
+
+      socketRoomID.set(socketID, roomID)
 
       socket.join(roomID)
       socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messageHistories })

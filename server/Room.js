@@ -64,10 +64,6 @@ class Room {
     }
   }
 
-  getPlayer(socketID) {
-    return this.playersMap.get(socketID)
-  }
-
   getPlayerSocketID(player) {
     for (let socketID of this.playersMap.keys()) {
       if (this.playersMap.get(socketID) === player)
@@ -102,6 +98,10 @@ class Room {
 
       return message
     }
+  }
+
+  getUser(socketID) {
+    return this.usersMap.get(socketID)
   }
 
   getUsers() {

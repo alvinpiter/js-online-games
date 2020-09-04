@@ -62,6 +62,18 @@ export default class RoomPage extends React.Component {
       })
     })
 
+    this.socket.on('LEFT_ROOM_BROADCAST', data => {
+      let newUsers = []
+      for (let user of this.state.users) {
+        if (user.nickname !== data.nickname)
+          newUsers.push(user)
+      }
+
+      this.setState({
+        users: newUsers
+      })
+    })
+
     this.socket.on('BROADCAST_MESSAGE', data => {
       let newMessageHistories = this.state.messageHistories.slice()
       newMessageHistories.push(data)
