@@ -103,7 +103,6 @@ test('startGame success', () => {
   expect(result.playersMap[2]).not.toEqual(undefined)
   expect(result.playersMap[1]).not.toEqual(result.playersMap[2])
 
-  expect(room.getPlayer(1)).not.toEqual(room.getPlayer(2))
   expect(room.isPlaying()).toEqual(true)
 })
 
@@ -217,6 +216,6 @@ test('move success and game has ended', () => {
   expect(result).toEqual({
     currentPlayer: 'O',
     lastMove,
-    endGameInfo: { winner: 'X' }
+    gameOverInfo: { winner: 'X' }
   })
 })
