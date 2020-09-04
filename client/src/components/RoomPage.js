@@ -347,7 +347,7 @@ export default class RoomPage extends React.Component {
         {chatBox}
       </div>
 
-      <div className="w-2/3 bg-green-200">
+      <div className="w-2/3">
         {playButtonDiv}
       </div>
     </div>
