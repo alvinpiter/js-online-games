@@ -1,16 +1,24 @@
+export function getBackgroundColorClass(color) {
+  return `bg-${getColorClass(color)}`
+}
+
 export function getTextColorClass(color) {
+  return `text-${getColorClass(color)}`
+}
+
+function getColorClass(color) {
   switch (color) {
     case 'GREEN':
-      return "text-green-500"
+      return "green-500"
     case 'BLUE':
-      return "text-blue-500"
+      return "blue-500"
     case 'PURPLE':
-      return "text-purple-500"
+      return "purple-500"
     case 'ORANGE':
-      return "text-orange-500"
+      return "orange-500"
     case 'RED':
-      return "text-red-500"
+      return "red-500"
     default:
-      return "text-black-500"
+      return "black-500"
   }
 }
