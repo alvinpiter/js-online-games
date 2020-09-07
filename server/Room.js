@@ -1,7 +1,7 @@
 const UserManager = require('./UserManager')
 const MessageManager = require('./MessageManager')
 const TicTacToeManager = require('./TicTacToeManager')
-const TicTacToe = require('./TicTacToe')
+const SudokuManager = require('./SudokuManager')
 
 class Room {
   constructor(gameCode) {
@@ -12,6 +12,9 @@ class Room {
     switch (gameCode) {
       case 'TICTACTOE':
         this.gameManager = new TicTacToeManager()
+        break
+      case 'SUDOKU':
+        this.gameManager = new SudokuManager()
         break
       default:
         throw new Error('Invalid game name')

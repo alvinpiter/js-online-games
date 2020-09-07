@@ -32,6 +32,23 @@ class SudokuManager {
       this.userBlockedCells.set(socketID, blockedCells)
       this.userScores.set(socketID, 0)
     }
+
+    let result = []
+    for (let user of users) {
+      const socketID = user.socketID
+
+      result.push({
+        user,
+        payload: {
+          board: this.game.getBoard(),
+          cellColors: this.cellColors,
+          blockedCells: this.userBlockedCells.get(socketID),
+          scores: this.getSortedScores()
+        }
+      })
+    }
+
+    return result
   }
 
   move(user, payload) {
@@ -72,6 +89,10 @@ class SudokuManager {
     const sortedScores = scores.sort((a, b) => b.score - a.score)
 
     return sortedScores
+  }
+
+  getNumberOfPlayers() {
+    return 5
   }
 }
 

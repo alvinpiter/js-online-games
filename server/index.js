@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 app.get('/games', (req, res) => {
   const games = [
     { name: 'Tic-Tac-Toe', code: 'TICTACTOE' },
+    { name: 'Sudoku', code: 'SUDOKU' }
   ]
 
   res.json(games)

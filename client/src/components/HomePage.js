@@ -115,6 +115,8 @@ function getRoomURL(gameCode, roomID) {
   switch (gameCode) {
     case 'TICTACTOE':
       return `${baseURL}/tic-tac-toe/${roomID}`
+    case 'SUDOKU':
+      return `${baseURL}/sudoku/${roomID}`
     default:
       return baseURL
   }

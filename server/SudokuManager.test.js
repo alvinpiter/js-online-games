@@ -12,7 +12,11 @@ const users = [
 test('startGame', () => {
   const manager = new SudokuManager()
 
-  manager.startGame(users[0], users)
+  const result = manager.startGame(users[0], users)
+
+  expect(result.length).toEqual(2)
+  expect(result[0].payload.scores.length).toEqual(2)
+  expect(result[1].payload.scores.length).toEqual(2)
 
   expect(manager.userBlockedCells.size).toEqual(2)
   expect(manager.userScores.size).toEqual(2)
