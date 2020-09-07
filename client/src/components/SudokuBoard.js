@@ -3,17 +3,29 @@ import { getBackgroundColorClass } from '../utils/color'
 
 export default function SudokuBoard(props) {
   const { board, blockedCells, cellColors, onCellAssignment } = props
+  const [selectedCell, setSelectedCell] = useState(null)
+
+  const onSelectCell = (row, column) => {
+    if (selectedCell !== null && selectedCell.row === row && selectedCell.column === column)
+      setSelectedCell(null)
+    else
+      setSelectedCell({row, column})
+  }
 
   let rows = []
   for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
     const cells = board[rowIndex].map((number, columnIndex) => {
+      const isSelected = (selectedCell !== null && selectedCell.row === rowIndex && selectedCell.column === columnIndex)
       return (
         <SudokuCell
+          key={columnIndex}
           number={number}
-          isBlocked={blockedCells[rowIndex][columnIndex]}
           color={cellColors[rowIndex][columnIndex]}
+          isBlocked={blockedCells[rowIndex][columnIndex]}
+          isSelected={isSelected}
           hasLeftBorder={columnIndex%3 === 0}
           hasTopBorder={rowIndex%3 === 0}
+          onSelectCell={() => onSelectCell(rowIndex, columnIndex)}
         />
       )
     })
@@ -40,10 +52,12 @@ export default function SudokuBoard(props) {
 function SudokuCell(props) {
   const {
     number,
-    isBlocked,
     color,
+    isBlocked,
+    isSelected,
     hasLeftBorder,
-    hasTopBorder
+    hasTopBorder,
+    onSelectCell
   } = props
 
   let cellClass = 'w-12 h-12 text-2xl flex justify-center items-center border-r border-b border-solid border-black'
@@ -51,6 +65,8 @@ function SudokuCell(props) {
     cellClass = `${cellClass} ${getBackgroundColorClass(color)}`
   } else if (isBlocked) {
     cellClass = `${cellClass} bg-black`
+  } else if (isSelected) {
+    cellClass = `${cellClass} bg-gray-400`
   }
 
   if (hasLeftBorder)
@@ -62,6 +78,7 @@ function SudokuCell(props) {
   return (
     <div
       className={cellClass}
+      onClick={onSelectCell}
     >
       {number}
     </div>
@@ -80,6 +97,7 @@ function SudokuInputPanel(props) {
     const cells = numbers[rowIndex].map((number, columnIndex) => {
       return (
         <div
+          key={columnIndex}
           className="w-12 h-12 text-2xl flex justify-center items-center border border-solid border-black"
         >
           {number}
