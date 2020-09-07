@@ -1,11 +1,16 @@
 const Sudoku = require('./Sudoku')
+const {
+  OutOfBoundsError,
+  CellIsNotEmptyError,
+  SudokuCellMismatchError
+} = require('./Errors')
 const puzzleString = '004300209005009001070060043006002087190007400050083000600000105003508690042910300'
 const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
 
 test('assign to non-empty cell', () => {
   const sudoku = new Sudoku(puzzleString, solutionString)
 
-  expect(() => sudoku.assign(0, 2, 1)).toThrow('Cell is not empty')
+  expect(() => sudoku.assign(0, 2, 1)).toThrowError(CellIsNotEmptyError)
 })
 
 test('assign to invalid row or column', () => {
@@ -21,14 +26,14 @@ test('assign to invalid row or column', () => {
   ]
 
   for (let invalid of invalids) {
-    expect(() => sudoku.assign(invalid[0], invalid[1], invalid[2])).toThrow('Invalid row or column')
+    expect(() => sudoku.assign(invalid[0], invalid[1], invalid[2])).toThrowError(OutOfBoundsError)
   }
 })
 
 test('assign does not match solution', () => {
   const sudoku = new Sudoku(puzzleString, solutionString)
 
-  expect(() => sudoku.assign(0, 0, 1)).toThrow('Wrong')
+  expect(() => sudoku.assign(0, 0, 1)).toThrowError(SudokuCellMismatchError)
 })
 
 test('hasEnded', () => {

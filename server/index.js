@@ -131,7 +131,12 @@ io.on('connection', socket => {
       const result = room.move(socketID, data.payload)
       io.to(roomID).emit('MOVE_ACCEPTED', result)
     } catch (e) {
-      socket.emit('MOVE_REJECTED', { message: e.toString() })
+      let result = {
+        message: e.message,
+        data: e.data
+      }
+
+      socket.emit('MOVE_REJECTED', result)
     }
   })
 

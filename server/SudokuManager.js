@@ -1,4 +1,5 @@
 const Sudoku = require('./Sudoku')
+const { SudokuCellMismatchError } = require('./Errors')
 const puzzleString = '064371259025849761901265843430192587198057432257403916689734125713528694542916378'
 const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
 
@@ -73,7 +74,11 @@ class SudokuManager {
         gameOver: this.game.hasEnded()
       }
     } catch (e) {
-      throw e
+      if (e instanceof SudokuCellMismatchError) {
+        this.blockCell(user, row, column)
+        throw new SudokuCellMismatchError({blockedCells: this.userBlockedCells.get(user.socketID)})
+      } else
+        throw e
     }
   }
 
@@ -82,6 +87,13 @@ class SudokuManager {
 
     const score = this.userScores.get(socketID)
     this.userScores.set(socketID, score + 1)
+  }
+
+  blockCell(user, row, column) {
+    let blockedCells = this.userBlockedCells.get(user.socketID)
+    blockedCells[row][column] = true
+
+    this.userBlockedCells.set(user.socketID, blockedCells)
   }
 
   getSortedScores() {

@@ -1,4 +1,9 @@
 const parseSudoku = require('./utils')
+const {
+  OutOfBoundsError,
+  CellIsNotEmptyError,
+  SudokuCellMismatchError
+} = require('./Errors')
 
 class Sudoku {
   constructor(puzzleString, solutionString) {
@@ -12,20 +17,20 @@ class Sudoku {
 
   assign(row, column, value) {
     if (row === undefined || column === undefined)
-      throw new Error('Invalid row or column')
+      throw new OutOfBoundsError()
 
     row = parseInt(row)
     column = parseInt(column)
     value = parseInt(value)
 
     if (row < 0 || row >= 9 || column < 0 || column >= 9)
-      throw new Error('Invalid row or column')
+      throw new OutOfBoundsError()
 
     if (this.board[row][column] !== null)
-      throw new Error('Cell is not empty')
+      throw new CellIsNotEmptyError()
 
     if (this.solution[row][column] !== value)
-      throw new Error('Wrong')
+      throw new SudokuCellMismatchError()
 
     this.board[row][column] = value
 

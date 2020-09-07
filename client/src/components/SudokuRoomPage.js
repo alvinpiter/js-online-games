@@ -126,8 +126,10 @@ export default class RoomPage extends React.Component {
       }
     })
 
-    this.socket.on('MOVE_REJECTED', data => {
-      console.log('MOVE_REJECTED', data)
+    this.socket.on('MOVE_REJECTED', response => {
+      this.setState({
+        blockedCells: response.data.blockedCells
+      })
     })
 
     this.socket.on('RESIGN_ACCEPTED', data => {
