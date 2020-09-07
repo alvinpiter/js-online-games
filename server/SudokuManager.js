@@ -1,5 +1,5 @@
 const Sudoku = require('./Sudoku')
-const puzzleString = '004300209005009001070060043006002087190007400050083000600000105003508690042910300'
+const puzzleString = '064371259025849761901265843430192587198057432257403916689734125713528694542916378'
 const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
 
 class SudokuManager {
@@ -8,6 +8,7 @@ class SudokuManager {
     this.userDetails = new Map()
     this.userBlockedCells = new Map()
     this.userScores = new Map()
+    this.playing = false
 
     this.cellColors = []
   }
@@ -19,6 +20,8 @@ class SudokuManager {
     this.cellColors = []
     for (let row = 0; row < 9; row++)
       this.cellColors.push(new Array(null, null, null, null, null, null, null, null, null))
+    this.playing = true
+    this.game = new Sudoku(puzzleString, solutionString)
 
     for (let user of users) {
       const socketID = user.socketID
@@ -52,6 +55,9 @@ class SudokuManager {
   }
 
   move(user, payload) {
+    if (!this.playing)
+      throw new Error('Game has not started yet')
+
     const { row, column, value } = payload
 
     try {
@@ -93,6 +99,13 @@ class SudokuManager {
 
   getNumberOfPlayers() {
     return 5
+  }
+
+  resign(actor) {
+    this.playing = false
+    return {
+      resigner: actor
+    }
   }
 }
 

@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import SudokuBoard from './SudokuBoard'
-import { getTextColorClass } from '../utils/color'
+import UserSpan from './UserSpan'
 
 /*
 There are 4 possible stages:
@@ -31,7 +31,9 @@ export default class RoomPage extends React.Component {
       blockedCells: null,
       scores: null,
       stage: 'USER_OUT',
-      startGameError: null
+      startGameError: null,
+      gameOverByResignation: false,
+      resigner: null
     }
   }
 
@@ -96,7 +98,7 @@ export default class RoomPage extends React.Component {
 
     this.socket.on('START_GAME_ACCEPTED', data => {
       const { board, cellColors, blockedCells, scores } = data
-      console.log(data)
+
       this.setState({
         board,
         cellColors,
@@ -115,6 +117,13 @@ export default class RoomPage extends React.Component {
         cellColors,
         scores
       })
+
+      if (gameOver) {
+        this.setState({
+          stage: 'GAME_OVER',
+          gameOverByResignation: false
+        })
+      }
     })
 
     this.socket.on('MOVE_REJECTED', data => {
@@ -125,7 +134,7 @@ export default class RoomPage extends React.Component {
       this.setState({
         stage: 'GAME_OVER',
         gameOverByResignation: true,
-        winner: data.winner
+        resigner: data.resigner
       })
     })
   }
@@ -216,18 +225,13 @@ export default class RoomPage extends React.Component {
       <div className="w-full bg-gray-200">
         Online users:
         {
-          this.state.users.map(user =>
-            <span className={`ml-2 font-bold ${getTextColorClass(user.color)}`}>{user.nickname}</span>
-          )
+          this.state.users.map(user => <span className="ml-2"><UserSpan user={user} /></span>)
         }
       </div>
       <div className="w-full h-64 overflow-auto bg-gray-200">
         {
           this.state.messageHistories.map((msg, index) =>
-            <p>
-              <span className={`${getTextColorClass(msg.user.color)} font-bold`}>{msg.user.nickname} </span>
-              : {msg.text}
-            </p>
+            <p key={index}> <UserSpan user={msg.user} />: {msg.text} </p>
           )
         }
       </div>
@@ -289,6 +293,14 @@ export default class RoomPage extends React.Component {
     </div>
 
     const scoresDiv = <ScoresDiv scores={this.state.scores} />
+    const gameOverInfo =
+    <div>
+      {
+        this.state.gameOverByResignation ?
+        <p><UserSpan user={this.state.resigner} /> ends the game </p> :
+        <p> Game over! </p>
+      }
+    </div>
 
     const userOutView = nicknameForm
     const userInView =
@@ -323,6 +335,7 @@ export default class RoomPage extends React.Component {
 
       <div className="w-2/3">
         {playButtonDiv}
+        {gameOverInfo}
         {scoresDiv}
         {gameDiv}
       </div>
@@ -355,12 +368,7 @@ function ScoresDiv(props) {
     <div>
       <ol>
       {
-        scores.map(entry => {
-          const nicknameSpan = <span className={`font-bold ${getTextColorClass(entry.user.color)}`}>{entry.user.nickname}</span>
-          return (
-            <li>{nicknameSpan}: {entry.score}</li>
-          )
-        })
+        scores.map(entry => <li><UserSpan user={entry.user} />: {entry.score} </li>)
       }
       </ol>
     </div>
