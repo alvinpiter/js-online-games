@@ -70,7 +70,7 @@ io.on('connection', socket => {
     try {
       const users = room.getUsers()
       const user = room.addUser(socketID, nickname)
-      const messageHistories = room.getMessageHistories()
+      const messageHistories = room.getMessages()
 
       socketRoomID.set(socketID, roomID)
 
@@ -91,7 +91,7 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.sendMessage(socketID, message)
+      const result = room.addMessage(socketID, message)
       io.to(roomID).emit('BROADCAST_MESSAGE', result)
     } catch (e) {
       socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })
@@ -106,12 +106,14 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.startGame()
+      const result = room.startGame(socketID)
       const currentPlayer = result.currentPlayer
 
-      for (let socketID in result.playersMap) {
-        const player = result.playersMap[socketID]
-        io.to(socketID).emit('START_GAME_ACCEPTED', {
+      for (let assignment of result.playerAssignments) {
+        const user = assignment.user
+        const player = assignment.player
+
+        io.to(user.socketID).emit('START_GAME_ACCEPTED', {
           currentPlayer,
           player
         })

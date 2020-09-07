@@ -1,7 +1,5 @@
 class TicTacToe {
   constructor() {
-    this.players = ['X', 'O']
-
     this.reset()
   }
 
@@ -12,14 +10,6 @@ class TicTacToe {
       [null, null, null],
       [null, null, null]
     ]
-  }
-
-  getPlayers() {
-    return this.players
-  }
-
-  getNumberOfPlayers() {
-    return 2
   }
 
   getCurrentPlayer() {

@@ -29,13 +29,13 @@ test('addUser success', () => {
 
   expect(user.nickname).toEqual('alvin')
   expect(user.color).not.toEqual(undefined)
-  expect(room.getNumberOfPlayers()).toEqual(1)
+  expect(room.getNumberOfUsers()).toEqual(1)
 })
 
-test('removeUser when socketID does not exist', () => {
+test('removeUser when invalid socketID', () => {
   const room = new Room('TICTACTOE')
 
-  expect(() => room.removeUser(1)).toThrow('socketID does not exist')
+  expect(() => room.removeUser(1)).toThrow('Invalid socketID')
 })
 
 test('removeUser success', () => {
@@ -47,37 +47,37 @@ test('removeUser success', () => {
 
   expect(user.nickname).toEqual('alvin')
   expect(user.color).not.toEqual(undefined)
-  expect(room.getNumberOfPlayers()).toEqual(0)
+  expect(room.getNumberOfUsers()).toEqual(0)
 })
 
-test('sendMessage when socketID does not exist', () => {
+test('addMessage when invalid socketID', () => {
   const room = new Room('TICTACTOE')
 
-  expect(() => room.sendMessage(1, 'hehe')).toThrow('socketID does not exist')
+  expect(() => room.addMessage(1, 'hehe')).toThrow('Invalid socketID')
 })
 
-test('sendMessage success', () => {
+test('addMessage success', () => {
   const room = new Room('TICTACTOE')
 
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
 
-  room.sendMessage(1, 'from alvin')
+  room.addMessage(1, 'from alvin')
 
-  const message = room.sendMessage(2, 'from teddy')
+  const message = room.addMessage(2, 'from teddy')
   expect(message).toEqual({
-    user: { nickname: 'teddy', color: expect.any(String) },
+    user: { nickname: 'teddy', socketID: 2, color: expect.any(String) },
     text: 'from teddy'
   })
 
-  const messageHistories = room.getMessageHistories()
+  const messageHistories = room.getMessages()
   expect(messageHistories).toEqual([
     {
-      user: { nickname: 'alvin', color: expect.any(String) },
+      user: { nickname: 'alvin', socketID: 1, color: expect.any(String) },
       text: 'from alvin'
     },
     {
-      user: { nickname: 'teddy', color: expect.any(String) },
+      user: { nickname: 'teddy', socketID: 2, color: expect.any(String) },
       text: 'from teddy'
     }
   ])
@@ -88,7 +88,7 @@ test('startGame when room is not full yet', () => {
 
   room.addUser(1, 'alvin')
 
-  expect(() => room.startGame()).toThrow('Room is not full yet')
+  expect(() => room.startGame(1)).toThrow('Room is not full yet')
 })
 
 test('startGame success', () => {
@@ -97,11 +97,12 @@ test('startGame success', () => {
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
 
-  const result = room.startGame()
+  const result = room.startGame(1)
+
   expect(result.currentPlayer).toEqual('X')
-  expect(result.playersMap[1]).not.toEqual(undefined)
-  expect(result.playersMap[2]).not.toEqual(undefined)
-  expect(result.playersMap[1]).not.toEqual(result.playersMap[2])
+  expect(result.playerAssignments.length).toEqual(2)
+  expect(result.playerAssignments[0].user).not.toEqual(result.playerAssignments[1].user)
+  expect(result.playerAssignments[0].player).not.toEqual(result.playerAssignments[1].player)
 
   expect(room.isPlaying()).toEqual(true)
 })
@@ -112,8 +113,7 @@ test('move when game has not started yet', () => {
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
 
-  const playerSocketID = room.getPlayerSocketID('X')
-  expect(() => room.move(playerSocketID, {row: 0, column: 0})).toThrow('Game has not started yet')
+  expect(() => room.move(1, {row: 0, column: 0})).toThrow('Game has not started yet')
 })
 
 test('move when socketID is invalid', () => {
@@ -121,7 +121,7 @@ test('move when socketID is invalid', () => {
 
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
-  room.startGame()
+  room.startGame(1)
 
   expect(() => room.move(3, {row: 0, column: 0})).toThrow('Invalid socketID')
 })
@@ -131,9 +131,7 @@ test('move when game throw an error', () => {
 
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
-  room.startGame()
-
-  const playerSocketID = room.getPlayerSocketID('X')
+  room.startGame(1)
 
   const mockMove = jest.fn()
   mockMove.mockImplementation(() => {
@@ -142,7 +140,7 @@ test('move when game throw an error', () => {
 
   TicTacToe.prototype.move = mockMove
 
-  expect(() => room.move(playerSocketID, {row: 0, column: 0})).toThrow('Some error')
+  expect(() => room.move(1, {row: 0, column: 0})).toThrow('Some error')
 })
 
 test('move success and game has not ended', () => {
@@ -150,9 +148,7 @@ test('move success and game has not ended', () => {
 
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
-  room.startGame()
-
-  const playerSocketID = room.getPlayerSocketID('X')
+  room.startGame(1)
 
   const lastMove = {
     player: 'X',
@@ -172,7 +168,7 @@ test('move success and game has not ended', () => {
   mockGetCurrentPlayer.mockReturnValue('O')
   TicTacToe.prototype.getCurrentPlayer = mockGetCurrentPlayer
 
-  const result = room.move(playerSocketID, {row: 0, column: 0})
+  const result = room.move(1, {row: 0, column: 0})
 
   expect(result).toEqual({
     currentPlayer: 'O',
@@ -185,9 +181,7 @@ test('move success and game has ended', () => {
 
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
-  room.startGame()
-
-  const playerSocketID = room.getPlayerSocketID('X')
+  room.startGame(1)
 
   const lastMove = {
     player: 'X',
@@ -211,7 +205,7 @@ test('move success and game has ended', () => {
   mockGetWinner.mockReturnValue('X')
   TicTacToe.prototype.getWinner = mockGetWinner
 
-  const result = room.move(playerSocketID, {row: 0, column: 0})
+  const result = room.move(1, {row: 0, column: 0})
 
   expect(result).toEqual({
     currentPlayer: 'O',

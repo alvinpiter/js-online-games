@@ -1,192 +1,73 @@
+const UserManager = require('./UserManager')
+const MessageManager = require('./MessageManager')
+const TicTacToeManager = require('./TicTacToeManager')
 const TicTacToe = require('./TicTacToe')
-const getRandomColor = require('./Colorize')
 
 class Room {
   constructor(gameCode) {
-    this.nicknamesSet = new Set()
-    this.colorsSet = new Set()
-    this.usersMap = new Map() // maps socketID to a user. A user is an object { nickname: .., color: ..}
-    this.playersMap = new Map() //maps socketID to a player in a game
-    this.messageHistories = [] //{user: .., text: ..}
-    this.game = null
-    this.playing = false
+    this.userManager = new UserManager()
+    this.messageManager = new MessageManager()
+    this.gameManager = null
 
     switch (gameCode) {
       case 'TICTACTOE':
-        this.game = new TicTacToe()
+        this.gameManager = new TicTacToeManager()
         break
       default:
         throw new Error('Invalid game name')
     }
   }
 
-  /*
-    Add a new socket connection to the room.
-    If the nickname exist, throw an error.
-    If room is full, throw an error.
-
-    On success, it returns the nickname.
-  */
   addUser(socketID, nickname) {
-    if (this.nicknamesSet.has(nickname))
-      throw new Error('Nickname taken, try something else')
-
-    if (this.getNumberOfPlayers() === this.game.getNumberOfPlayers())
+    if (this.getNumberOfUsers() === this.gameManager.getNumberOfPlayers())
       throw new Error('Room is full')
 
-    const user = {
-      nickname,
-      color: getRandomColor(this.colorsSet)
-    }
-
-    this.nicknamesSet.add(user.nickname)
-    this.colorsSet.add(user.color)
-    this.usersMap.set(socketID, user)
-
-    return user
+    return this.userManager.addUser(socketID, nickname)
   }
 
-  /*
-    If the socketID does not exist, throw an error.
-
-    On success, it returns the nickname
-  */
   removeUser(socketID) {
-    const user = this.usersMap.get(socketID)
-    if (user === undefined)
-      throw new Error('socketID does not exist')
-    else {
-      this.nicknamesSet.delete(user.nickname)
-      this.colorsSet.delete(user.color)
-      this.usersMap.delete(socketID)
-
-      return user
-    }
+    return this.userManager.removeUser(socketID)
   }
 
-  getPlayerSocketID(player) {
-    for (let socketID of this.playersMap.keys()) {
-      if (this.playersMap.get(socketID) === player)
-        return socketID
-    }
-  }
-
-  getNumberOfPlayers() {
-    return this.nicknamesSet.size
+  getNumberOfUsers() {
+    return this.userManager.getNumberOfUsers()
   }
 
   isPlaying() {
-    return this.playing
+    return this.gameManager.isPlaying()
   }
 
-  /*
-    If the socketID does not exist, throw an error.
+  addMessage(socketID, text) {
+    const user = this.userManager.getUser(socketID)
 
-    On success, return an object with format {user: ..., text: ...}
-  */
-  sendMessage(socketID, text) {
-    const user = this.usersMap.get(socketID)
-    if (user === undefined)
-      throw new Error('socketID does not exist')
-    else {
-      const message = {
-        user,
-        text
-      }
-
-      this.messageHistories.push(message)
-
-      return message
-    }
-  }
-
-  getOppositePlayer(player) {
-    return (player === 'X' ? 'O' : 'X')
-  }
-
-  getUser(socketID) {
-    return this.usersMap.get(socketID)
+    return this.messageManager.addMessage(user, text)
   }
 
   getUsers() {
-    return Array.from(this.usersMap).map(entry => entry[1])
+    return this.userManager.getUsers()
   }
 
-  getMessageHistories() {
-    return this.messageHistories
+  getMessages() {
+    return this.messageManager.getMessages()
   }
 
-  startGame() {
-    if (this.getNumberOfPlayers() !== this.game.getNumberOfPlayers())
-      throw new Error('Room is not full yet')
+  startGame(socketID) {
+    const actor = this.userManager.getUser(socketID)
+    const users = this.userManager.getUsers()
 
-    let playersMap = {}
-
-    const socketIDs = Array.from(this.usersMap).map(entry => entry[0])
-    const players = this.game.getPlayers()
-    socketIDs.forEach((socketID, index) => {
-      playersMap[socketID] = players[index]
-      this.playersMap.set(socketID, players[index])
-    })
-
-    this.playing = true
-    this.game.reset()
-
-    return {
-      currentPlayer: this.game.getCurrentPlayer(),
-      playersMap
-    }
+    return this.gameManager.startGame(actor, users)
   }
 
-  /*
-    If the game has not started, throw an error
-    If invalid socketID, throw an error
-    If game throw an error, re-throw the error
-    If game ended after a move, include gameOverInfo in return value
-
-    return value:
-    {
-      gameOverInfo: { winner: ... }, //this is optional
-      lastMove: {
-        player: ..,
-        row: ..,
-        column: ..,
-      },
-      currentPlayer: ..
-    }
-  */
   move(socketID, payload) {
-    if (!this.playing)
-      throw new Error('Game has not started yet')
+    const user = this.userManager.getUser(socketID)
 
-    const player = this.playersMap.get(socketID)
-    if (player === undefined)
-      throw new Error('Invalid socketID')
-
-    try {
-      const lastMove = this.game.move(player, payload)
-      const currentPlayer = this.game.getCurrentPlayer()
-
-      let result = {
-        lastMove,
-        currentPlayer
-      }
-
-      if (this.game.hasEnded())
-        result.gameOverInfo = { winner: this.game.getWinner() }
-
-      return result
-    } catch (e) {
-      throw e
-    }
+    return this.gameManager.move(user, payload)
   }
 
   resign(socketID) {
-    const player = this.playersMap.get(socketID)
-    this.playing = false
-    return {
-      winner: this.getOppositePlayer(player)
-    }
+    const user = this.userManager.getUser(socketID)
+
+    return this.gameManager.resign(user)
   }
 }
 
