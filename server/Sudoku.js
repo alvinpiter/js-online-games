@@ -1,7 +1,9 @@
+const parseSudoku = require('./utils')
+
 class Sudoku {
   constructor(puzzleString, solutionString) {
-    this.puzzle = parse(puzzleString)
-    this.solution = parse(solutionString)
+    this.puzzle = parseSudoku(puzzleString)
+    this.solution = parseSudoku(solutionString)
   }
 
   assign(row, column, value) {
@@ -36,23 +38,6 @@ class Sudoku {
 
     return true
   }
-}
-
-//parse a sudoku string into a 2D array
-function parse(str) {
-  let result = []
-  let row = []
-  for (let idx = 0; idx < 81; idx++) {
-    let num = (str[idx] === '0' ? null : parseInt(str[idx]))
-
-    row.push(num)
-    if (row.length === 9) {
-      result.push(row)
-      row = []
-    }
-  }
-
-  return result
 }
 
 module.exports = Sudoku
