@@ -12,6 +12,13 @@ export default function SudokuBoard(props) {
       setSelectedCell({row, column})
   }
 
+  const onSelectPanelCell = (number) => {
+    if (selectedCell === null)
+      return
+    else
+      onCellAssignment(selectedCell.row, selectedCell.column, number)
+  }
+
   let rows = []
   for (let rowIndex = 0; rowIndex < 9; rowIndex++) {
     const cells = board[rowIndex].map((number, columnIndex) => {
@@ -44,7 +51,9 @@ export default function SudokuBoard(props) {
         {rows}
       </div>
 
-      <SudokuInputPanel />
+      <SudokuInputPanel
+        onSelectPanelCell={onSelectPanelCell}
+      />
     </div>
   )
 }
@@ -86,6 +95,8 @@ function SudokuCell(props) {
 }
 
 function SudokuInputPanel(props) {
+  const { onSelectPanelCell } = props
+
   const numbers = [
     [1, 2, 3],
     [4, 5, 6],
@@ -99,6 +110,7 @@ function SudokuInputPanel(props) {
         <div
           key={columnIndex}
           className="w-12 h-12 text-2xl flex justify-center items-center border border-solid border-black"
+          onClick={() => onSelectPanelCell(number)}
         >
           {number}
         </div>
