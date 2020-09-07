@@ -27,7 +27,7 @@ class Room {
 
     On success, it returns the nickname.
   */
-  addSocket(socketID, nickname) {
+  addUser(socketID, nickname) {
     if (this.nicknamesSet.has(nickname))
       throw new Error('Nickname taken, try something else')
 
@@ -51,7 +51,7 @@ class Room {
 
     On success, it returns the nickname
   */
-  removeSocket(socketID) {
+  removeUser(socketID) {
     const user = this.usersMap.get(socketID)
     if (user === undefined)
       throw new Error('socketID does not exist')

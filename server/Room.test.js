@@ -5,45 +5,45 @@ test('create room with invalid game name', () => {
   expect(() => new Room('PUBG')).toThrow('Invalid game name')
 })
 
-test('addSocket when nickname already exists', () => {
+test('addUser when nickname already exists', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
+  room.addUser(1, 'alvin')
 
-  expect(() => room.addSocket(2, 'alvin')).toThrow('Nickname taken, try something else')
+  expect(() => room.addUser(2, 'alvin')).toThrow('Nickname taken, try something else')
 })
 
-test('addSocket when room is full', () => {
+test('addUser when room is full', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
 
-  expect(() => room.addSocket(3, 'smith')).toThrow('Room is full')
+  expect(() => room.addUser(3, 'smith')).toThrow('Room is full')
 })
 
-test('addSocket success', () => {
+test('addUser success', () => {
   const room = new Room('TICTACTOE')
 
-  const user = room.addSocket(1, 'alvin')
+  const user = room.addUser(1, 'alvin')
 
   expect(user.nickname).toEqual('alvin')
   expect(user.color).not.toEqual(undefined)
   expect(room.getNumberOfPlayers()).toEqual(1)
 })
 
-test('removeSocket when socketID does not exist', () => {
+test('removeUser when socketID does not exist', () => {
   const room = new Room('TICTACTOE')
 
-  expect(() => room.removeSocket(1)).toThrow('socketID does not exist')
+  expect(() => room.removeUser(1)).toThrow('socketID does not exist')
 })
 
-test('removeSocket success', () => {
+test('removeUser success', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
+  room.addUser(1, 'alvin')
 
-  const user = room.removeSocket(1)
+  const user = room.removeUser(1)
 
   expect(user.nickname).toEqual('alvin')
   expect(user.color).not.toEqual(undefined)
@@ -59,8 +59,8 @@ test('sendMessage when socketID does not exist', () => {
 test('sendMessage success', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
 
   room.sendMessage(1, 'from alvin')
 
@@ -86,7 +86,7 @@ test('sendMessage success', () => {
 test('startGame when room is not full yet', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
+  room.addUser(1, 'alvin')
 
   expect(() => room.startGame()).toThrow('Room is not full yet')
 })
@@ -94,8 +94,8 @@ test('startGame when room is not full yet', () => {
 test('startGame success', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
 
   const result = room.startGame()
   expect(result.currentPlayer).toEqual('X')
@@ -109,8 +109,8 @@ test('startGame success', () => {
 test('move when game has not started yet', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
 
   const playerSocketID = room.getPlayerSocketID('X')
   expect(() => room.move(playerSocketID, {row: 0, column: 0})).toThrow('Game has not started yet')
@@ -119,8 +119,8 @@ test('move when game has not started yet', () => {
 test('move when socketID is invalid', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
   room.startGame()
 
   expect(() => room.move(3, {row: 0, column: 0})).toThrow('Invalid socketID')
@@ -129,8 +129,8 @@ test('move when socketID is invalid', () => {
 test('move when game throw an error', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
   room.startGame()
 
   const playerSocketID = room.getPlayerSocketID('X')
@@ -148,8 +148,8 @@ test('move when game throw an error', () => {
 test('move success and game has not ended', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
   room.startGame()
 
   const playerSocketID = room.getPlayerSocketID('X')
@@ -183,8 +183,8 @@ test('move success and game has not ended', () => {
 test('move success and game has ended', () => {
   const room = new Room('TICTACTOE')
 
-  room.addSocket(1, 'alvin')
-  room.addSocket(2, 'teddy')
+  room.addUser(1, 'alvin')
+  room.addUser(2, 'teddy')
   room.startGame()
 
   const playerSocketID = room.getPlayerSocketID('X')

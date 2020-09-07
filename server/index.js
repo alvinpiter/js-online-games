@@ -52,7 +52,7 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const user = room.removeSocket(socketID)
+      const user = room.removeUser(socketID)
       io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
     } catch (e) {
       console.log("eror")
@@ -69,7 +69,7 @@ io.on('connection', socket => {
 
     try {
       const users = room.getUsers()
-      const user = room.addSocket(socketID, nickname)
+      const user = room.addUser(socketID, nickname)
       const messageHistories = room.getMessageHistories()
 
       socketRoomID.set(socketID, roomID)
