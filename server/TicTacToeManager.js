@@ -11,17 +11,24 @@ class TicTacToeManager {
     if (users.length !== 2)
       throw new Error('Room is not full yet')
 
-    let playerAssignments = []
-    playerAssignments.push({
+    let result = []
+
+    result.push({
       user: actor,
-      player: 'X'
+      payload: {
+        currentPlayer: this.game.getCurrentPlayer(),
+        player: 'X'
+      }
     })
 
     for (let user of users) {
       if (user.socketID !== actor.socketID) {
-        playerAssignments.push({
+        result.push({
           user,
-          player: 'O'
+          payload: {
+            currentPlayer: this.game.getCurrentPlayer(),
+            player: 'O'
+          }
         })
       }
     }
@@ -29,14 +36,11 @@ class TicTacToeManager {
     this.game.reset()
     this.playing = true
 
-    for (let assignment of playerAssignments) {
-      this.socketToPlayerMap.set(assignment.user.socketID, assignment.player)
+    for (let r of result) {
+      this.socketToPlayerMap.set(r.user.socketID, r.payload.player)
     }
 
-    return {
-      currentPlayer: this.game.getCurrentPlayer(),
-      playerAssignments
-    }
+    return result
   }
 
   move(user, payload) {

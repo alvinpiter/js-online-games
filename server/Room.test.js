@@ -99,10 +99,25 @@ test('startGame success', () => {
 
   const result = room.startGame(1)
 
-  expect(result.currentPlayer).toEqual('X')
-  expect(result.playerAssignments.length).toEqual(2)
-  expect(result.playerAssignments[0].user).not.toEqual(result.playerAssignments[1].user)
-  expect(result.playerAssignments[0].player).not.toEqual(result.playerAssignments[1].player)
+  expect(result.length).toEqual(2)
+  for (let r of result) {
+    const user = r.user
+    const payload = r.payload
+
+    if (user.socketID === 1) {
+      expect(payload).toEqual({
+        currentPlayer: 'X',
+        player: 'X'
+      })
+    }
+
+    if (user.socketID === 2) {
+      expect(payload).toEqual({
+        currentPlayer: 'X',
+        player: 'O'
+      })
+    }
+  }
 
   expect(room.isPlaying()).toEqual(true)
 })

@@ -107,16 +107,12 @@ io.on('connection', socket => {
 
     try {
       const result = room.startGame(socketID)
-      const currentPlayer = result.currentPlayer
 
-      for (let assignment of result.playerAssignments) {
-        const user = assignment.user
-        const player = assignment.player
+      for (let r of result) {
+        const socketID = r.user.socketID
+        const payload = r.payload
 
-        io.to(user.socketID).emit('START_GAME_ACCEPTED', {
-          currentPlayer,
-          player
-        })
+        io.to(socketID).emit('START_GAME_ACCEPTED', payload)
       }
     } catch (e) {
       socket.emit('START_GAME_REJECTED', { message: e.toString() })
