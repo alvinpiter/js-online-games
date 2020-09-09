@@ -1,7 +1,6 @@
 import React from 'react';
 import HomePage from './components/HomePage'
 import RoomPage from './components/RoomPage'
-import SudokuRoomPage from './components/SudokuRoomPage'
 import {
   BrowserRouter as Router,
   Switch,

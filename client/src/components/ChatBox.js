@@ -70,7 +70,7 @@ export default class ChatBox extends React.Component {
         <div className="w-full bg-gray-200">
           Online users:
           {
-            this.state.users.map(user => <span className="ml-2"><UserSpan user={user} /></span>)
+            this.state.users.map((user, index) => <span key={index} className="ml-2"><UserSpan user={user} /></span>)
           }
         </div>
 

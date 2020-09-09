@@ -27,12 +27,6 @@ export default class RoomPage extends React.Component {
     }
   }
 
-  resetBoard() {
-    this.setState({
-      board: [[null, null, null], [null, null, null], [null, null, null]]
-    })
-  }
-
   componentDidMount() {
     this.socket = io("http://localhost:5000")
 
@@ -70,7 +64,6 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
-      console.log(data)
       this.setState({ stage: 'USER_PLAYING' })
       this.refs.game.handleEvent('START_GAME_ACCEPTED', data)
     })
