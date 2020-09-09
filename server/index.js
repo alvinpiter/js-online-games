@@ -71,12 +71,12 @@ io.on('connection', socket => {
     try {
       const users = room.getUsers()
       const user = room.addUser(socketID, nickname)
-      const messageHistories = room.getMessages()
+      const messages = room.getMessages()
 
       socketRoomID.set(socketID, roomID)
 
       socket.join(roomID)
-      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messageHistories })
+      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messages })
       io.to(roomID).emit('JOIN_ROOM_ACCEPTED_BROADCAST', user)
     } catch (e) {
       socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })
@@ -87,12 +87,12 @@ io.on('connection', socket => {
     log('SEND_MESSAGE', data)
 
     const roomID = data.roomID
-    const message = data.payload.message
+    const text = data.payload.text
 
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.addMessage(socketID, message)
+      const result = room.addMessage(socketID, text)
       io.to(roomID).emit('BROADCAST_MESSAGE', result)
     } catch (e) {
       socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })
