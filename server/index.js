@@ -71,12 +71,12 @@ io.on('connection', socket => {
     try {
       const users = room.getUsers()
       const user = room.addUser(socketID, nickname)
-      const messageHistories = room.getMessages()
+      const messages = room.getMessages()
 
       socketRoomID.set(socketID, roomID)
 
       socket.join(roomID)
-      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messageHistories })
+      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messages })
       io.to(roomID).emit('JOIN_ROOM_ACCEPTED_BROADCAST', user)
     } catch (e) {
       socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })

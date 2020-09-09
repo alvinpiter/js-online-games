@@ -22,8 +22,6 @@ export default class RoomPage extends React.Component {
     this.state = {
       nicknameError: null,
       user: null,
-      users: [],
-      messageHistories: [],
       player: null,
       currentPlayer: null,
       board: [[null, null, null], [null, null, null], [null, null, null]],
@@ -44,24 +42,19 @@ export default class RoomPage extends React.Component {
     this.socket = io("http://localhost:5000")
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
-      const { user, users, messageHistories } = data
+      const { user } = data
 
       this.setState({
         nicknameError: null,
         user,
-        users,
-        messageHistories,
         stage: 'USER_IN'
       })
+
+      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED', data)
     })
 
     this.socket.on('JOIN_ROOM_ACCEPTED_BROADCAST', data => {
-      const newUsers = this.state.users.slice()
-      newUsers.push(data)
-
-      this.setState({
-        users: newUsers
-      })
+      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED_BROADCAST', data)
     })
 
     this.socket.on('JOIN_ROOM_REJECTED', data => {
@@ -73,24 +66,11 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('LEFT_ROOM_BROADCAST', data => {
-      let newUsers = []
-      for (let user of this.state.users) {
-        if (user.nickname !== data.nickname)
-          newUsers.push(user)
-      }
-
-      this.setState({
-        users: newUsers
-      })
+      this.refs.chatBox.handleEvent('LEFT_ROOM_BROADCAST', data)
     })
 
     this.socket.on('BROADCAST_MESSAGE', data => {
-      let newMessageHistories = this.state.messageHistories.slice()
-      newMessageHistories.push(data)
-
-      this.setState({
-        messageHistories: newMessageHistories
-      })
+      this.refs.chatBox.handleEvent('BROADCAST_MESSAGE', data)
     })
 
     this.socket.on('START_GAME_REJECTED', data => {
@@ -100,7 +80,6 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
-      console.log(data)
       this.resetBoard()
 
       const { player, currentPlayer } = data
@@ -198,8 +177,7 @@ export default class RoomPage extends React.Component {
 
     const chatBox =
     <ChatBox
-      users={this.state.users}
-      messages={this.state.messageHistories}
+      ref="chatBox"
       onSend={this.onSendMessage}
     />
 
