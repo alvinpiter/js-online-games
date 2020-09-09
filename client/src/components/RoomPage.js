@@ -20,7 +20,6 @@ export default class RoomPage extends React.Component {
     this.socket = null
 
     this.state = {
-      nicknameError: null,
       user: null,
       player: null,
       currentPlayer: null,
@@ -45,7 +44,6 @@ export default class RoomPage extends React.Component {
       const { user } = data
 
       this.setState({
-        nicknameError: null,
         user,
         stage: 'USER_IN'
       })
@@ -58,11 +56,7 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('JOIN_ROOM_REJECTED', data => {
-      const { message } = data
-
-      this.setState({
-        nicknameError: message
-      })
+      this.refs.nicknameForm.handleEvent('JOIN_ROOM_REJECTED', data)
     })
 
     this.socket.on('LEFT_ROOM_BROADCAST', data => {
@@ -171,7 +165,7 @@ export default class RoomPage extends React.Component {
   render() {
     const nicknameForm =
     <NicknameForm
-      error={this.state.nicknameError}
+      ref="nicknameForm"
       onSubmit={this.onSubmitNickname}
     />
 

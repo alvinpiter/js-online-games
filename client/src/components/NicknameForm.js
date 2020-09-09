@@ -1,31 +1,48 @@
-import React, { useState } from 'react'
+import React from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
-export default function NicknameForm(props) {
-  const {
-    error,
-    onSubmit
-  } = props
+export default class NicknameForm extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      error: null,
+      nicknameValue: ""
+    }
+  }
 
-  const [nicknameValue, setNicknameValue] = useState("")
+  handleEvent(type, data) {
+    switch (type) {
+      case 'JOIN_ROOM_REJECTED':
+        this.handleJoinRoomRejected(data)
+        break
+      default:
+        console.error(`Event ${type} is not handled in NicknameForm`)
+    }
+  }
 
-  return (
-    <div className="flex space-x-2">
-      <TextField
-        label="Nickname"
-        variant="outlined"
-        placeholder="Specify your nickname"
-        onChange={(event) => setNicknameValue(event.target.value)}
-        error={error !== null}
-        helperText={error}
-      />
+  handleJoinRoomRejected(data) {
+    this.setState({ error: data.message })
+  }
 
-      <Button
-        color="primary"
-        variant="contained"
-        onClick={() => onSubmit(nicknameValue)}
-      > Submit </Button>
-    </div>
-  )
+  render() {
+    return (
+      <div className="flex space-x-2">
+        <TextField
+          label="Nickname"
+          variant="outlined"
+          placeholder="Specify your nickname"
+          onChange={(event) => this.setState({nicknameValue: event.target.value})}
+          error={this.state.error !== null}
+          helperText={this.state.error}
+        />
+
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={() => this.props.onSubmit(this.state.nicknameValue)}
+        > Submit </Button>
+      </div>
+    )
+  }
 }
