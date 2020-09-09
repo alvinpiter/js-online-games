@@ -22,8 +22,26 @@ class SudokuCellMismatchError extends Error {
   }
 }
 
+class RoomIsNotFullError extends Error {
+  constructor(data) {
+    super('Room is not full yet')
+    this.name = 'RoomIsNotFullError'
+    this.data = data
+  }
+}
+
+class GameHasNotStartedError extends Error {
+  constructor(data) {
+    super('Game has not started')
+    this.name = 'GameHasNotStartedError'
+    this.data = data
+  }
+}
+
 module.exports = {
   OutOfBoundsError,
   CellIsNotEmptyError,
-  SudokuCellMismatchError
+  SudokuCellMismatchError,
+  RoomIsNotFullError,
+  GameHasNotStartedError
 }

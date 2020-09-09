@@ -145,6 +145,16 @@ class Reversi {
     }
   }
 
+  getWinner() {
+    const score = this.getScore()
+    if (score['W'] === score['B'])
+      return null
+    else if (score['W'] < score['B'])
+      return 'W'
+    else
+      return 'B'
+  }
+
   isInsideBoard(row, column) {
     return row >= 0 && row < 8 && column >= 0 && column < 8
   }
