@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 app.get('/games', (req, res) => {
   const games = [
     { name: 'Tic-Tac-Toe', code: 'TICTACTOE' },
+    { name: 'Sudoku', code: 'SUDOKU' }
   ]
 
   res.json(games)
@@ -52,7 +53,7 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const user = room.removeSocket(socketID)
+      const user = room.removeUser(socketID)
       io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
     } catch (e) {
       console.log("eror")
@@ -69,13 +70,13 @@ io.on('connection', socket => {
 
     try {
       const users = room.getUsers()
-      const user = room.addSocket(socketID, nickname)
-      const messageHistories = room.getMessageHistories()
+      const user = room.addUser(socketID, nickname)
+      const messages = room.getMessages()
 
       socketRoomID.set(socketID, roomID)
 
       socket.join(roomID)
-      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messageHistories })
+      socket.emit('JOIN_ROOM_ACCEPTED', { user, users, messages })
       io.to(roomID).emit('JOIN_ROOM_ACCEPTED_BROADCAST', user)
     } catch (e) {
       socket.emit('JOIN_ROOM_REJECTED', { message: e.toString() })
@@ -86,12 +87,12 @@ io.on('connection', socket => {
     log('SEND_MESSAGE', data)
 
     const roomID = data.roomID
-    const message = data.payload.message
+    const text = data.payload.text
 
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.sendMessage(socketID, message)
+      const result = room.addMessage(socketID, text)
       io.to(roomID).emit('BROADCAST_MESSAGE', result)
     } catch (e) {
       socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })
@@ -106,15 +107,13 @@ io.on('connection', socket => {
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.startGame()
-      const currentPlayer = result.currentPlayer
+      const result = room.startGame(socketID)
 
-      for (let socketID in result.playersMap) {
-        const player = result.playersMap[socketID]
-        io.to(socketID).emit('START_GAME_ACCEPTED', {
-          currentPlayer,
-          player
-        })
+      for (let r of result) {
+        const socketID = r.user.socketID
+        const payload = r.payload
+
+        io.to(socketID).emit('START_GAME_ACCEPTED', payload)
       }
     } catch (e) {
       socket.emit('START_GAME_REJECTED', { message: e.toString() })
@@ -132,7 +131,12 @@ io.on('connection', socket => {
       const result = room.move(socketID, data.payload)
       io.to(roomID).emit('MOVE_ACCEPTED', result)
     } catch (e) {
-      socket.emit('MOVE_REJECTED', { message: e.toString() })
+      let result = {
+        message: e.message,
+        data: e.data
+      }
+
+      socket.emit('MOVE_REJECTED', result)
     }
   })
 

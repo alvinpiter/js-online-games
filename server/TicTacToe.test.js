@@ -20,12 +20,6 @@ test('reset', () => {
   expect(game.getCurrentPlayer()).toEqual('X')
 })
 
-test('getPlayers', () => {
-  const game = new TicTacToe()
-
-  expect(game.getPlayers()).toEqual(['X', 'O'])
-})
-
 test('move with invalid player', () => {
   const game = new TicTacToe()
 

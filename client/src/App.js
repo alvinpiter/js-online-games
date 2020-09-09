@@ -11,7 +11,16 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/tic-tac-toe/:roomID" component={RoomPage} />
+        <Route
+          path="/tic-tac-toe/:roomID"
+          render={props => <RoomPage gameCode="TICTACTOE" roomID={props.match.params.roomID} />}
+        />
+
+        <Route
+          path="/sudoku/:roomID"
+          render={props => <RoomPage gameCode="SUDOKU" roomID={props.match.params.roomID} />}
+        />
+
         <Route path="/" component={HomePage} />
       </Switch>
     </Router>
