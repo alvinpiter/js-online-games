@@ -70,30 +70,7 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
-<<<<<<< HEAD
-      const { board, currentPlayer, gameOverInfo } = data
-
-      let numRow = board.length
-
-      let newBoard = []
-      for (let row = 0; row < numRow; row++)
-        newBoard.push(board[row].slice())
-
-      this.setState({
-        currentPlayer,
-        board: newBoard
-      })
-
-      if (gameOverInfo !== undefined) {
-        this.setState({
-          stage: 'GAME_OVER',
-          gameOverByResignation: false,
-          winner: gameOverInfo.winner
-        })
-      }
-=======
       this.refs.game.handleEvent('MOVE_ACCEPTED', data)
->>>>>>> aa2f3989f03733eba2ada140034a3015044f99b2
     })
 
     this.socket.on('MOVE_REJECTED', data => {
