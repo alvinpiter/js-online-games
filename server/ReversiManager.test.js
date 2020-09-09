@@ -47,21 +47,18 @@ test('startGame success', () => {
     const user = r.user
     const payload = r.payload
 
-    if (user.socketID === 1) {
-      expect(payload).toEqual({
-        currentPlayer: 'W',
-        player: 'W',
-        board: startingBoard
-      })
-    }
+    expect(payload.currentPlayer).toEqual('W')
+    expect(payload.board).toEqual(startingBoard)
 
-    if (user.socketID === 2) {
-      expect(payload).toEqual({
-        currentPlayer: 'W',
-        player: 'B',
-        board: startingBoard
-      })
-    }
+    expect(payload.scores.length).toEqual(2)
+    expect(payload.scores[0].score).toEqual(2)
+    expect(payload.scores[1].score).toEqual(2)
+
+    if (user.socketID === 1)
+      expect(payload.player).toEqual('W')
+
+    if (user.socketID === 2)
+      expect(payload.player).toEqual('B')
   }
 
   expect(manager.isPlaying()).toEqual(true)

@@ -18,36 +18,27 @@ class ReversiManager {
       throw new RoomIsNotFullError
 
     this.game.reset()
-
-    let result = []
-    result.push({
-      user: actor,
-      payload: {
-        currentPlayer: this.game.getCurrentPlayer(),
-        player: 'W',
-        board: this.game.getBoard()
-      }
-    })
-
-    for (let user of users) {
-      if (user.socketID !== actor.socketID) {
-        result.push({
-          user,
-          payload: {
-            currentPlayer: this.game.getCurrentPlayer(),
-            player: 'B',
-            board: this.game.getBoard()
-          }
-        })
-        break
-      }
-    }
-
     this.playing = true
 
-    for (let r of result) {
-      this.userDetails.set(r.user.socketID, r.user)
-      this.socketToPlayerMap.set(r.user.socketID, r.payload.player)
+    for (let user of users) {
+      this.userDetails.set(user.socketID, user)
+      this.socketToPlayerMap.set(
+        user.socketID,
+        user.socketID === actor.socketID ? 'W' : 'B'
+      )
+    }
+
+    let result = []
+    for (let user of users) {
+      result.push({
+        user,
+        payload: {
+          player: this.socketToPlayerMap.get(user.socketID),
+          currentPlayer: this.game.getCurrentPlayer(),
+          board: this.game.getBoard(),
+          scores: this.getSortedScores(this.game.getScore())
+        }
+      })
     }
 
     return result
