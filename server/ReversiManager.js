@@ -65,8 +65,10 @@ class ReversiManager {
 
     let result = { board, currentPlayer, scores: sortedScores }
 
-    if (this.game.hasEnded())
+    if (this.game.hasEnded()) {
       result.gameOverInfo = { winner: this.game.getWinner() }
+      this.playing = false
+    }
 
     return result
   }

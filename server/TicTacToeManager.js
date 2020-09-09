@@ -57,8 +57,10 @@ class TicTacToeManager {
 
       let result = { currentPlayer, board }
 
-      if (this.game.hasEnded())
+      if (this.game.hasEnded()) {
         result.gameOverInfo = { winner: this.game.getWinner() }
+        this.playing = false
+      }
 
       return result
     } catch(e) {

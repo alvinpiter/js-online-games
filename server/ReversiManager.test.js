@@ -166,4 +166,6 @@ test('move success and game has ended', () => {
       winner: 'W'
     }
   })
+
+  expect(manager.isPlaying()).toEqual(false)
 })
