@@ -165,14 +165,14 @@ test('move success and game has not ended', () => {
   room.addUser(2, 'teddy')
   room.startGame(1)
 
-  const lastMove = {
-    player: 'X',
-    row: 0,
-    column: 0
-  }
+  const newBoard = [
+    ['X', null, null],
+    [null, null, null],
+    [null, null, null]
+  ]
 
   const mockMove = jest.fn()
-  mockMove.mockReturnValue(lastMove)
+  mockMove.mockReturnValue(newBoard)
   TicTacToe.prototype.move = mockMove
 
   const mockHasEnded = jest.fn()
@@ -187,7 +187,7 @@ test('move success and game has not ended', () => {
 
   expect(result).toEqual({
     currentPlayer: 'O',
-    lastMove
+    board: newBoard
   })
 })
 
@@ -198,14 +198,14 @@ test('move success and game has ended', () => {
   room.addUser(2, 'teddy')
   room.startGame(1)
 
-  const lastMove = {
-    player: 'X',
-    row: 0,
-    column: 0
-  }
+  const newBoard = [
+    ['X', null, null],
+    [null, null, null],
+    [null, null, null]
+  ]
 
   const mockMove = jest.fn()
-  mockMove.mockReturnValue(lastMove)
+  mockMove.mockReturnValue(newBoard)
   TicTacToe.prototype.move = mockMove
 
   const mockHasEnded = jest.fn()
@@ -224,7 +224,7 @@ test('move success and game has ended', () => {
 
   expect(result).toEqual({
     currentPlayer: 'O',
-    lastMove,
+    board: newBoard,
     gameOverInfo: { winner: 'X' }
   })
 })

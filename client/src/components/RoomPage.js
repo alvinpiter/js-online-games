@@ -1,9 +1,9 @@
 import React from 'react'
 import io from 'socket.io-client'
-import TicTacToeBoard from './TicTacToeBoard'
 import Button from '@material-ui/core/Button'
 import NicknameForm from './NicknameForm'
 import ChatBox from './ChatBox'
+import TicTacToeGame from './TicTacToeGame'
 
 /*
 There are 4 possible stages:
@@ -16,18 +16,14 @@ export default class RoomPage extends React.Component {
   constructor(props) {
     super(props)
 
-    this.roomID = this.props.match.params.roomID
+    this.gameCode = this.props.gameCode
+    this.roomID = this.props.roomID
     this.socket = null
 
     this.state = {
       user: null,
-      player: null,
-      currentPlayer: null,
-      board: [[null, null, null], [null, null, null], [null, null, null]],
       stage: 'USER_OUT',
-      startGameError: null,
-      gameOverByResignation: false,
-      winner: null
+      startGameError: null
     }
   }
 
@@ -74,50 +70,22 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('START_GAME_ACCEPTED', data => {
-      this.resetBoard()
-
-      const { player, currentPlayer } = data
-      this.setState({
-        player,
-        currentPlayer,
-        startGameError: null,
-        stage: 'USER_PLAYING'
-      })
+      console.log(data)
+      this.setState({ stage: 'USER_PLAYING' })
+      this.refs.game.handleEvent('START_GAME_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
-      const { lastMove, currentPlayer, gameOverInfo } = data
-
-      let newBoard = []
-      for (let row = 0; row < 3; row++)
-        newBoard.push(this.state.board[row].slice())
-
-      newBoard[lastMove.row][lastMove.column] = lastMove.player
-
-      this.setState({
-        currentPlayer,
-        board: newBoard
-      })
-
-      if (gameOverInfo !== undefined) {
-        this.setState({
-          stage: 'GAME_OVER',
-          gameOverByResignation: false,
-          winner: gameOverInfo.winner
-        })
-      }
+      this.refs.game.handleEvent('MOVE_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_REJECTED', data => {
-      console.log('MOVE_REJECTED', data)
+      this.refs.game.handleEvent('MOVE_REJECTED', data)
     })
 
     this.socket.on('RESIGN_ACCEPTED', data => {
-      this.setState({
-        stage: 'GAME_OVER',
-        gameOverByResignation: true,
-        winner: data.winner
-      })
+      this.setState({ stage: 'GAME_OVER' })
+      this.refs.game.handleEvent('RESIGN_ACCEPTED', data)
     })
   }
 
@@ -152,12 +120,12 @@ export default class RoomPage extends React.Component {
     }
   }
 
-  onClickTicTacToeCell = (row, column) => {
+  onMove = (payload) => {
     this.socket.emit(
       'MOVE',
       {
         roomID: this.roomID,
-        payload: { row, column }
+        payload
       }
     )
   }
@@ -175,46 +143,18 @@ export default class RoomPage extends React.Component {
       onSend={this.onSendMessage}
     />
 
-    const turnInfo =
-    <div>
-      <p className="text-center"> You are playing as <span className="font-bold">{this.state.player}</span></p>
-      {
-        this.state.player === this.state.currentPlayer ?
-        <p className="text-center"> It's your turn </p> :
-        <p className="text-center"> It's your opponent's turn </p>
-      }
-    </div>
-
-    const resignationInfo =
-    <p className="text-center">
-      {
-        this.state.winner === this.state.player ?
-        'Your opponent resigned. You win!' :
-        'You resigned. You lose!'
-      }
-    </p>
-
-    let winnerInfo
-    if (this.state.winner === null)
-      winnerInfo = <p className="text-center"> Game over! It's a tie </p>
-    else
-      winnerInfo = <p className="text-center"> {this.state.winner === this.state.player ? 'You win!' : 'You lose!'} </p>
-
-    const gameOverInfo =
-    <div>
-      {
-        this.state.gameOverByResignation ?
-        resignationInfo :
-        winnerInfo
-      }
-    </div>
+    let gameComponent
+    switch (this.gameCode) {
+      case 'TICTACTOE':
+        gameComponent = <TicTacToeGame ref="game" onMove={this.onMove} />
+        break
+      default:
+        gameComponent = null
+    }
 
     const gameDiv =
     <div className="bg-blue-200 flex justify-center p-4">
-      <TicTacToeBoard
-        board={this.state.board}
-        onClickCell={this.onClickTicTacToeCell}
-      />
+      {gameComponent}
     </div>
 
     const playButtonDiv =
@@ -266,7 +206,6 @@ export default class RoomPage extends React.Component {
 
       <div className="w-2/3">
         {resignButtonDiv}
-        {turnInfo}
         {gameDiv}
       </div>
     </div>
@@ -279,28 +218,21 @@ export default class RoomPage extends React.Component {
 
       <div className="w-2/3">
         {playButtonDiv}
-        {gameOverInfo}
         {gameDiv}
       </div>
     </div>
 
-    const renderByStage = (stage) => {
-      switch (stage) {
-        case 'USER_OUT':
-          return userOutView
-        case 'USER_IN':
-          return userInView
-        case 'USER_PLAYING':
-          return userPlayingView
-        default:
-          return gameOverView
-      }
+    switch (this.state.stage) {
+      case 'USER_OUT':
+        return userOutView
+      case 'USER_IN':
+        return userInView
+      case 'USER_PLAYING':
+        return userPlayingView
+      case 'GAME_OVER':
+        return gameOverView
+      default:
+        return null
     }
-
-    return (
-      <div>
-        {renderByStage(this.state.stage)}
-      </div>
-    )
   }
 }

@@ -11,13 +11,16 @@ class TicTacToeManager {
     if (users.length !== 2)
       throw new Error('Room is not full yet')
 
+    this.game.reset()
+
     let result = []
 
     result.push({
       user: actor,
       payload: {
         currentPlayer: this.game.getCurrentPlayer(),
-        player: 'X'
+        player: 'X',
+        board: this.game.getBoard()
       }
     })
 
@@ -27,13 +30,13 @@ class TicTacToeManager {
           user,
           payload: {
             currentPlayer: this.game.getCurrentPlayer(),
-            player: 'O'
+            player: 'O',
+            board: this.game.getBoard()
           }
         })
       }
     }
 
-    this.game.reset()
     this.playing = true
 
     for (let r of result) {
@@ -49,13 +52,10 @@ class TicTacToeManager {
 
     const player = this.socketToPlayerMap.get(user.socketID)
     try {
-      const lastMove = this.game.move(player, payload)
+      const board = this.game.move(player, payload)
       const currentPlayer = this.game.getCurrentPlayer()
 
-      let result = {
-        lastMove,
-        currentPlayer,
-      }
+      let result = { currentPlayer, board }
 
       if (this.game.hasEnded())
         result.gameOverInfo = { winner: this.game.getWinner() }
