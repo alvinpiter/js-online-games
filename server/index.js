@@ -87,12 +87,12 @@ io.on('connection', socket => {
     log('SEND_MESSAGE', data)
 
     const roomID = data.roomID
-    const message = data.payload.message
+    const text = data.payload.text
 
     const room = roomManager.get(roomID)
 
     try {
-      const result = room.addMessage(socketID, message)
+      const result = room.addMessage(socketID, text)
       io.to(roomID).emit('BROADCAST_MESSAGE', result)
     } catch (e) {
       socket.emit('SEND_MESSAGE_REJECTED', { message: e.toString() })

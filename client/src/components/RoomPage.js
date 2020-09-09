@@ -158,12 +158,12 @@ export default class RoomPage extends React.Component {
     )
   }
 
-  onSendMessage = (message) => {
+  onSendMessage = (text) => {
     this.socket.emit(
       'SEND_MESSAGE',
       {
         roomID: this.roomID,
-        payload: { message }
+        payload: { text }
       }
     )
   }
@@ -200,7 +200,7 @@ export default class RoomPage extends React.Component {
     <ChatBox
       users={this.state.users}
       messages={this.state.messageHistories}
-      onSendMessage={this.onSendMessage}
+      onSend={this.onSendMessage}
     />
 
     const turnInfo =

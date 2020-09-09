@@ -7,14 +7,10 @@ export default function ChatBox(props) {
   const {
     users,
     messages,
-    onSendMessage
+    onSend
   } = props
 
-  const [messageTextFieldValue, setMessageTextFieldValue] = useState("")
-  const onClickSend = () => {
-    onSendMessage(messageTextFieldValue)
-    setMessageTextFieldValue("")
-  }
+  const [textValue, setTextValue] = useState("")
 
   return (
     <div className="space-y-2">
@@ -38,14 +34,17 @@ export default function ChatBox(props) {
           variant="outlined"
           placeholder="Write a message..."
           className="w-3/4"
-          onChange={(event) => setMessageTextFieldValue(event.target.value)}
-          value={messageTextFieldValue}
+          onChange={(event) => setTextValue(event.target.value)}
+          value={textValue}
         />
         <Button
           color="primary"
           variant="contained"
           className="w-1/4"
-          onClick={onClickSend}
+          onClick={() => {
+            onSend(textValue)
+            setTextValue("")
+          }}
         > Send </Button>
       </div>
     </div>
