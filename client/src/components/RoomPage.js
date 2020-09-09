@@ -3,7 +3,7 @@ import io from 'socket.io-client'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import TicTacToeBoard from './TicTacToeBoard'
-import { getTextColorClass } from '../utils/color'
+import ChatBox from './ChatBox'
 
 /*
 There are 4 possible stages:
@@ -25,7 +25,6 @@ export default class RoomPage extends React.Component {
       user: null,
       users: [],
       messageHistories: [],
-      messageTextFieldValue: "",
       player: null,
       currentPlayer: null,
       board: [[null, null, null], [null, null, null], [null, null, null]],
@@ -168,26 +167,14 @@ export default class RoomPage extends React.Component {
     )
   }
 
-  onChangeMessageTextField = (event) => {
-    this.setState({
-      messageTextFieldValue: event.target.value
-    })
-  }
-
-  onSendMessage = () => {
+  onSendMessage = (message) => {
     this.socket.emit(
       'SEND_MESSAGE',
       {
         roomID: this.roomID,
-        payload: {
-          message: this.state.messageTextFieldValue
-        }
+        payload: { message }
       }
     )
-
-    this.setState({
-      messageTextFieldValue: ""
-    })
   }
 
   onStartGame = () => {
@@ -231,43 +218,11 @@ export default class RoomPage extends React.Component {
     </div>
 
     const chatBox =
-    <div className="space-y-2">
-      <h1 className="text-center"> Chat Box </h1>
-      <div className="w-full bg-gray-200">
-        Online users:
-        {
-          this.state.users.map(user =>
-            <span className={`ml-2 font-bold ${getTextColorClass(user.color)}`}>{user.nickname}</span>
-          )
-        }
-      </div>
-      <div className="w-full h-64 overflow-auto bg-gray-200">
-        {
-          this.state.messageHistories.map((msg, index) =>
-            <p>
-              <span className={`${getTextColorClass(msg.user.color)} font-bold`}>{msg.user.nickname} </span>
-              : {msg.text}
-            </p>
-          )
-        }
-      </div>
-
-      <div className="flex">
-        <TextField
-          variant="outlined"
-          placeholder="Write a message..."
-          className="w-3/4"
-          onChange={this.onChangeMessageTextField}
-          value={this.state.messageTextFieldValue}
-        />
-        <Button
-          color="primary"
-          variant="contained"
-          className="w-1/4"
-          onClick={this.onSendMessage}
-        > Send </Button>
-      </div>
-    </div>
+    <ChatBox
+      users={this.state.users}
+      messages={this.state.messageHistories}
+      onSendMessage={this.onSendMessage}
+    />
 
     const turnInfo =
     <div>
