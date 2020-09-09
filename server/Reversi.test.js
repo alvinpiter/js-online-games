@@ -108,6 +108,7 @@ test('move success', () => {
     game.setBoard(boards[idx])
 
     expect(game.move('B', moves[idx])).toEqual(expectedBoards[idx])
+    expect(game.getCurrentPlayer()).toEqual('W')
   }
 })
 

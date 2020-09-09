@@ -69,6 +69,7 @@ class Reversi {
 
     this.flipCells(flippedCells)
     this.board[row][column] = player
+    this.currentPlayer = this.getNextPlayer()
 
     return this.board
   }

@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button'
 import NicknameForm from './NicknameForm'
 import ChatBox from './ChatBox'
 import TicTacToeGame from './TicTacToeGame'
+import ReversiGame from './ReversiGame'
 import SudokuGame from './SudokuGame'
 
 /*
@@ -143,6 +144,9 @@ export default class RoomPage extends React.Component {
     switch (this.gameCode) {
       case 'TICTACTOE':
         gameComponent = <TicTacToeGame ref="game" onMove={this.onMove} />
+        break
+      case 'REVERSI':
+        gameComponent = <ReversiGame ref="game" onMove={this.onMove} />
         break
       case 'SUDOKU':
         gameComponent = <SudokuGame ref="game" onMove={this.onMove} />

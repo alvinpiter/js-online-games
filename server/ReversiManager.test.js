@@ -166,3 +166,16 @@ test('move success and game has ended', () => {
 
   expect(manager.isPlaying()).toEqual(false)
 })
+
+test('resign', () => {
+  const manager = new ReversiManager()
+
+  manager.startGame(users[0], users)
+
+  const mockGetOppositePlayer = jest.fn()
+  mockGetOppositePlayer.mockReturnValue('W')
+  Reversi.prototype.getOppositePlayer = mockGetOppositePlayer
+
+  expect(manager.resign(users[0])).toEqual({ winner: 'W' })
+  expect(manager.isPlaying()).toEqual(false)
+})
