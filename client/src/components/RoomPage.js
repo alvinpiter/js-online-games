@@ -1,8 +1,8 @@
 import React from 'react'
 import io from 'socket.io-client'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
 import TicTacToeBoard from './TicTacToeBoard'
+import Button from '@material-ui/core/Button'
+import NicknameForm from './NicknameForm'
 import ChatBox from './ChatBox'
 
 /*
@@ -20,7 +20,6 @@ export default class RoomPage extends React.Component {
     this.socket = null
 
     this.state = {
-      nicknameTextFieldValue: "",
       nicknameError: null,
       user: null,
       users: [],
@@ -149,20 +148,12 @@ export default class RoomPage extends React.Component {
     })
   }
 
-  onChangeNicknameTextField = (event) => {
-    this.setState({
-      nicknameTextFieldValue: event.target.value
-    })
-  }
-
-  onSubmitNickname = () => {
+  onSubmitNickname = (nickname) => {
     this.socket.emit(
       'JOIN_ROOM',
       {
         roomID: this.roomID,
-        payload: {
-          nickname: this.state.nicknameTextFieldValue
-        }
+        payload: { nickname }
       }
     )
   }
@@ -200,22 +191,10 @@ export default class RoomPage extends React.Component {
 
   render() {
     const nicknameForm =
-    <div className="flex space-x-2">
-      <TextField
-        label="Nickname"
-        variant="outlined"
-        placeholder="Specify your nickname"
-        onChange={this.onChangeNicknameTextField}
-        error={this.state.nicknameError !== null}
-        helperText={this.state.nicknameError}
-      />
-
-      <Button
-        color="primary"
-        variant="contained"
-        onClick={this.onSubmitNickname}
-      > Submit </Button>
-    </div>
+    <NicknameForm
+      error={this.state.nicknameError}
+      onSubmit={this.onSubmitNickname}
+    />
 
     const chatBox =
     <ChatBox
