@@ -70,6 +70,8 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
+      if (data.gameOverInfo || data.gameOver)
+        this.setState({ stage: 'GAME_OVER' })
       this.refs.game.handleEvent('MOVE_ACCEPTED', data)
     })
 
