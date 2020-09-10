@@ -107,14 +107,16 @@ test('startGame success', () => {
     if (user.socketID === 1) {
       expect(payload).toEqual({
         currentPlayer: 'X',
-        player: 'X'
+        player: 'X',
+        board: [[null, null, null], [null, null, null], [null, null, null]]
       })
     }
 
     if (user.socketID === 2) {
       expect(payload).toEqual({
         currentPlayer: 'X',
-        player: 'O'
+        player: 'O',
+        board: [[null, null, null], [null, null, null], [null, null, null]]
       })
     }
   }

@@ -2,6 +2,7 @@ const UserManager = require('./UserManager')
 const MessageManager = require('./MessageManager')
 const TicTacToeManager = require('./TicTacToeManager')
 const SudokuManager = require('./SudokuManager')
+const ReversiManager = require('./ReversiManager')
 
 class Room {
   constructor(gameCode) {
@@ -12,6 +13,9 @@ class Room {
     switch (gameCode) {
       case 'TICTACTOE':
         this.gameManager = new TicTacToeManager()
+        break
+      case 'REVERSI':
+        this.gameManager = new ReversiManager()
         break
       case 'SUDOKU':
         this.gameManager = new SudokuManager()

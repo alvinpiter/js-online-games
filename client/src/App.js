@@ -17,6 +17,11 @@ function App() {
         />
 
         <Route
+          path="/reversi/:roomID"
+          render={props => <RoomPage gameCode="REVERSI" roomID={props.match.params.roomID} />}
+        />
+
+        <Route
           path="/sudoku/:roomID"
           render={props => <RoomPage gameCode="SUDOKU" roomID={props.match.params.roomID} />}
         />
