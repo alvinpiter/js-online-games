@@ -97,6 +97,17 @@ test('addMessage success', () => {
   ])
 })
 
+test('addMessage only maintain last 50 messages', () => {
+  const room = new Room('TICTACTOE')
+
+  room.addUser(1, 'alvin')
+
+  for (let i = 0; i < 55; i++)
+    room.addMessage(1, 'from alvin')
+
+  expect(room.getMessages().length).toEqual(50)
+})
+
 test('startGame when room is not full yet', () => {
   const room = new Room('TICTACTOE')
 
