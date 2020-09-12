@@ -121,7 +121,7 @@ function GameOverInfo(props) {
     <div>
       {
         gameOverByResignation ?
-        <ResignationInfo user={resigner} /> :
+        <ResignationInfo resigner={resigner} /> :
         <p> Game over! </p>
       }
     </div>
