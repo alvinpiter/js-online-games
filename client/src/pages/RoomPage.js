@@ -20,8 +20,6 @@ export default class RoomPage extends React.Component {
   constructor(props) {
     super(props)
 
-    this.gameCode = this.props.gameCode
-    this.roomID = this.props.roomID
     this.socket = null
 
     this.state = {
@@ -92,7 +90,7 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'JOIN_ROOM',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload: { nickname }
       }
     )
@@ -102,20 +100,20 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'SEND_MESSAGE',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload: { text }
       }
     )
   }
 
   onStartGame = () => {
-    this.socket.emit('START_GAME', { roomID: this.roomID })
+    this.socket.emit('START_GAME', { roomID: this.props.roomID })
   }
 
   onResignGame = () => {
     const confirmation = window.confirm("Are you sure you want to resign?")
     if (confirmation) {
-      this.socket.emit('RESIGN', { roomID: this.roomID })
+      this.socket.emit('RESIGN', { roomID: this.props.roomID })
     }
   }
 
@@ -123,7 +121,7 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'MOVE',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload
       }
     )
@@ -143,7 +141,7 @@ export default class RoomPage extends React.Component {
     />
 
     let gameComponent
-    switch (this.gameCode) {
+    switch (this.props.gameCode) {
       case 'TICTACTOE':
         gameComponent = <TicTacToeGame ref="game" onMove={this.onMove} />
         break
@@ -246,9 +244,23 @@ export default class RoomPage extends React.Component {
       <div>
         <NavBar page='Room' />
         <Container>
+          <h1 className="text-3xl font-bold">{getGameNameFromCode(this.props.gameCode)} Room</h1>
           {renderViewByStage(this.state.stage)}
         </Container>
       </div>
     )
+  }
+}
+
+function getGameNameFromCode(code) {
+  switch (code) {
+    case 'TICTACTOE':
+      return 'Tic-tac-toe'
+    case 'REVERSI':
+      return 'Reversi'
+    case 'SUDOKU':
+      return 'Sudoku'
+    default:
+      return ''
   }
 }
