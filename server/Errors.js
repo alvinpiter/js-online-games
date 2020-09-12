@@ -54,6 +54,14 @@ class NicknameTakenError extends Error {
   }
 }
 
+class GameIsOnGoingError extends Error {
+  constructor(data) {
+    super('Game is on going')
+    this.name = 'GameIsOnGoingError'
+    this.data = data
+  }
+}
+
 module.exports = {
   OutOfBoundsError,
   CellIsNotEmptyError,
@@ -61,5 +69,6 @@ module.exports = {
   RoomIsNotFullError,
   RoomIsFullError,
   GameHasNotStartedError,
-  NicknameTakenError
+  NicknameTakenError,
+  GameIsOnGoingError
 }

@@ -119,6 +119,10 @@ class SudokuManager {
       resigner: actor
     }
   }
+
+  isPlaying() {
+    return this.playing
+  }
 }
 
 module.exports = SudokuManager
