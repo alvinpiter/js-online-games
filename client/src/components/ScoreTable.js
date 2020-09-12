@@ -12,23 +12,25 @@ export default function ScoreTable(props) {
   const { scores } = props
 
   return (
-    <TableContainer component={Paper}>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell> Who </TableCell>
-            <TableCell> Score </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {scores.map(score => (
-            <TableRow key={score.user.nickname}>
-              <TableCell> <UserSpan user={score.user} /> </TableCell>
-              <TableCell> {score.score} </TableCell>
+    <div className="w-1/3">
+      <TableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell> Who </TableCell>
+              <TableCell> Score </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {scores.map(score => (
+              <TableRow key={score.user.nickname}>
+                <TableCell> <UserSpan user={score.user} /> </TableCell>
+                <TableCell> {score.score} </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 }

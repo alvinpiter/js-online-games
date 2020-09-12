@@ -83,8 +83,7 @@ export default class ReversiGame extends React.Component {
     const userInView = null
 
     const userPlayingView =
-    <div>
-      <WinnerInfo player={"X"} winner={"O"} />
+    <div className="space-y-2">
       <TurnInfo
         player={this.state.player}
         currentPlayer={this.state.currentPlayer}
@@ -99,7 +98,7 @@ export default class ReversiGame extends React.Component {
     </div>
 
     const gameOverView =
-    <div>
+    <div className="space-y-2">
       <GameOverInfo
         player={this.state.player}
         gameOverByResignation={this.state.gameOverByResignation}
