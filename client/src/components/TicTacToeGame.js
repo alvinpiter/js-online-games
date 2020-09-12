@@ -1,5 +1,6 @@
 import React from 'react'
 import TicTacToeBoard from './TicTacToeBoard'
+import TurnInfo from './TurnInfo'
 import WinnerInfo from './WinnerInfo'
 import ResignationInfo from './ResignationInfo'
 
@@ -120,20 +121,6 @@ export default class TicTacToeGame extends React.Component {
         return null
     }
   }
-}
-
-function TurnInfo(props) {
-  const { player, currentPlayer } = props
-  return (
-    <div className="text-center space-y-2">
-      <p> You are playing as <span className="font-bold">{player}</span></p>
-      {
-        player === currentPlayer ?
-        <p> It's your turn </p> :
-        <p> It's your opponent's turn </p>
-      }
-    </div>
-  )
 }
 
 function GameOverInfo(props) {
