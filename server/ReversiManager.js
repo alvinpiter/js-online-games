@@ -9,13 +9,15 @@ class ReversiManager {
     this.game = new Reversi()
     this.userDetails = new Map()
     this.socketToPlayerMap = new Map()
-    this.userScores = new Map()
     this.playing = false
   }
 
   startGame(actor, users) {
     if (users.length !== 2)
       throw new RoomIsNotFullError
+
+    this.userDetails.clear()
+    this.socketToPlayerMap.clear()
 
     this.game.reset()
     this.playing = true

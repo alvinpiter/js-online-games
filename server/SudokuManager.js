@@ -97,12 +97,12 @@ class SudokuManager {
   }
 
   getSortedScores() {
-    const scores = Array.from(this.userScores).map(entry => {
-      return {
-        user: this.userDetails.get(entry[0]),
-        score: entry[1]
-      }
-    })
+    let scores = []
+    for (let entry of this.userDetails) {
+      const user = entry[1]
+      const score = this.userScores.get(user.socketID)
+      scores.push({ user, score })
+    }
 
     const sortedScores = scores.sort((a, b) => b.score - a.score)
 
