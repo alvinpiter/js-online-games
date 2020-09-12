@@ -7,6 +7,7 @@ import TicTacToeGame from '../components/TicTacToeGame'
 import ReversiGame from '../components/ReversiGame'
 import SudokuGame from '../components/SudokuGame'
 import Container from '../components/Container'
+import NavBar from '../components/NavBar'
 
 /*
 There are 4 possible stages:
@@ -243,6 +244,7 @@ export default class RoomPage extends React.Component {
 
     return (
       <div>
+        <NavBar page='Room' />
         <Container>
           {renderViewByStage(this.state.stage)}
         </Container>

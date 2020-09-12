@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Container from '../components/Container'
 import Spinner from '../components/Spinner'
+import NavBar from '../components/NavBar'
 
 export default function HomePage(props) {
   const [games, setGames] = useState([])
@@ -51,6 +52,7 @@ export default function HomePage(props) {
 
   return (
     <div>
+      <NavBar page='Home' />
       <Container>
         {
           isLoadingGames ?
