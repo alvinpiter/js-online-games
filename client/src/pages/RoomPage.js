@@ -27,6 +27,10 @@ export default class RoomPage extends React.Component {
       stage: 'USER_OUT',
       startGameError: null
     }
+
+    this.nicknameFormRef = React.createRef()
+    this.chatBoxRef = React.createRef()
+    this.gameRef = React.createRef()
   }
 
   componentDidMount() {
@@ -40,23 +44,23 @@ export default class RoomPage extends React.Component {
         stage: 'USER_IN'
       })
 
-      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED', data)
+      this.chatBoxRef.current.handleEvent('JOIN_ROOM_ACCEPTED', data)
     })
 
     this.socket.on('JOIN_ROOM_ACCEPTED_BROADCAST', data => {
-      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED_BROADCAST', data)
+      this.chatBoxRef.current.handleEvent('JOIN_ROOM_ACCEPTED_BROADCAST', data)
     })
 
     this.socket.on('JOIN_ROOM_REJECTED', data => {
-      this.refs.nicknameForm.handleEvent('JOIN_ROOM_REJECTED', data)
+      this.nicknameFormRef.current.handleEvent('JOIN_ROOM_REJECTED', data)
     })
 
     this.socket.on('LEFT_ROOM_BROADCAST', data => {
-      this.refs.chatBox.handleEvent('LEFT_ROOM_BROADCAST', data)
+      this.chatBoxRef.current.handleEvent('LEFT_ROOM_BROADCAST', data)
     })
 
     this.socket.on('BROADCAST_MESSAGE', data => {
-      this.refs.chatBox.handleEvent('BROADCAST_MESSAGE', data)
+      this.chatBoxRef.current.handleEvent('BROADCAST_MESSAGE', data)
     })
 
     this.socket.on('START_GAME_REJECTED', data => {
@@ -67,22 +71,22 @@ export default class RoomPage extends React.Component {
 
     this.socket.on('START_GAME_ACCEPTED', data => {
       this.setState({ stage: 'USER_PLAYING' })
-      this.refs.game.handleEvent('START_GAME_ACCEPTED', data)
+      this.gameRef.current.handleEvent('START_GAME_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
       if (data.gameOverInfo || data.gameOver)
         this.setState({ stage: 'GAME_OVER' })
-      this.refs.game.handleEvent('MOVE_ACCEPTED', data)
+      this.gameRef.current.handleEvent('MOVE_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_REJECTED', data => {
-      this.refs.game.handleEvent('MOVE_REJECTED', data)
+      this.gameRef.current.handleEvent('MOVE_REJECTED', data)
     })
 
     this.socket.on('RESIGN_ACCEPTED', data => {
       this.setState({ stage: 'GAME_OVER' })
-      this.refs.game.handleEvent('RESIGN_ACCEPTED', data)
+      this.gameRef.current.handleEvent('RESIGN_ACCEPTED', data)
     })
   }
 
@@ -130,26 +134,26 @@ export default class RoomPage extends React.Component {
   render() {
     const nicknameForm =
     <NicknameForm
-      ref="nicknameForm"
+      ref={this.nicknameFormRef}
       onSubmit={this.onSubmitNickname}
     />
 
     const chatBox =
     <ChatBox
-      ref="chatBox"
+      ref={this.chatBoxRef}
       onSend={this.onSendMessage}
     />
 
     let gameComponent
     switch (this.props.gameCode) {
       case 'TICTACTOE':
-        gameComponent = <TicTacToeGame ref="game" onMove={this.onMove} />
+        gameComponent = <TicTacToeGame ref={this.gameRef} onMove={this.onMove} />
         break
       case 'REVERSI':
-        gameComponent = <ReversiGame ref="game" onMove={this.onMove} />
+        gameComponent = <ReversiGame ref={this.gameRef} onMove={this.onMove} />
         break
       case 'SUDOKU':
-        gameComponent = <SudokuGame ref="game" onMove={this.onMove} />
+        gameComponent = <SudokuGame ref={this.gameRef} onMove={this.onMove} />
         break
       default:
         gameComponent = null
