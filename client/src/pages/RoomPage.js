@@ -1,12 +1,12 @@
 import React from 'react'
 import io from 'socket.io-client'
 import Button from '@material-ui/core/Button'
-import NicknameForm from './NicknameForm'
-import ChatBox from './ChatBox'
-import TicTacToeGame from './TicTacToeGame'
-import ReversiGame from './ReversiGame'
-import SudokuGame from './SudokuGame'
-import Container from './Container'
+import NicknameForm from '../components/NicknameForm'
+import ChatBox from '../components/ChatBox'
+import TicTacToeGame from '../components/TicTacToeGame'
+import ReversiGame from '../components/ReversiGame'
+import SudokuGame from '../components/SudokuGame'
+import Container from '../components/Container'
 
 /*
 There are 4 possible stages:

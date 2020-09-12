@@ -1,6 +1,6 @@
 import React from 'react';
-import HomePage from './components/HomePage'
-import RoomPage from './components/RoomPage'
+import HomePage from './pages/HomePage'
+import RoomPage from './pages/RoomPage'
 import {
   BrowserRouter as Router,
   Switch,

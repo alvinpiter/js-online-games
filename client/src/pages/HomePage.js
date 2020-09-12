@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import Container from './Container'
-import Spinner from './Spinner'
+import Container from '../components/Container'
+import Spinner from '../components/Spinner'
 
 export default function HomePage(props) {
   const [games, setGames] = useState([])
