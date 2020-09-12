@@ -58,8 +58,12 @@ export default class SudokuGame extends React.Component {
     }
   }
 
-  handleMoveRejected(data) {
-    this.setState({ blockedCells: data.data.blockedCells })
+  handleMoveRejected(response) {
+    const { message, data } = response
+
+    console.log(message)
+    if (data !== undefined)
+      this.setState({ blockedCells: data.data.blockedCells })
   }
 
   handleResignAccepted(data) {
