@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import Container from './Container'
+import Spinner from './Spinner'
 
 export default function HomePage(props) {
   const [games, setGames] = useState([])
@@ -49,25 +50,24 @@ export default function HomePage(props) {
   }
 
   return (
-    <div className="space-y-4">
-      {
-        isLoadingGames ?
-        <CircularProgress /> :
-        <GamePicker
-          games={games}
-          onChangeGame={onChangeGame}
-          onClickSubmit={onClickSubmit}
-        />
-      }
+    <div>
+      <Container>
+        {
+          isLoadingGames ?
+          <Spinner /> :
+          <GamePicker
+            games={games}
+            onChangeGame={onChangeGame}
+            onClickSubmit={onClickSubmit}
+          />
+        }
 
-      {
-        isLoadingRoom ?
-        <CircularProgress /> :
-        (room === null ?
-         null :
-         <RoomInfo room={room} />
-        )
-      }
+        {
+          isLoadingRoom ?
+          <Spinner /> :
+          <RoomInfo room={room} />
+        }
+      </Container>
     </div>
   )
 }
@@ -96,29 +96,49 @@ function GamePicker(props) {
 
 function RoomInfo(props) {
   const { room } = props
-  const roomURL = getRoomURL(room.gameCode, room.id)
+  const [copied, setCopied] = useState(false)
+
+  const onCopy = () => {
+    navigator.clipboard.writeText(getRoomURL(room))
+    setCopied(true)
+  }
+
+  if (room == null)
+    return null
 
   return (
     <div>
       <p> Room created! Visit and share the link below to your opponent to start playing.</p>
-      <TextField
-        defaultValue={roomURL}
-        InputProps={{ readOnly: true }}
-        style={{ width: 500 }}
-      />
+      <div className="flex space-x-2">
+        <TextField
+          value={getRoomURL(room)}
+          inputProps={{ readOnly: true }}
+          style={{ width: 500 }}
+        />
+
+        <Button
+          color="primary"
+          variant="contained"
+          onClick={onCopy}
+        >
+          {copied ? 'Copied!' : 'Copy' }
+        </Button>
+      </div>
     </div>
   )
 }
 
-function getRoomURL(gameCode, roomID) {
+function getRoomURL(room) {
+  const { id, gameCode } = room
+
   const baseURL = 'http://localhost:3000'
   switch (gameCode) {
     case 'TICTACTOE':
-      return `${baseURL}/tic-tac-toe/${roomID}`
+      return `${baseURL}/tic-tac-toe/${id}`
     case 'REVERSI':
-      return `${baseURL}/reversi/${roomID}`
+      return `${baseURL}/reversi/${id}`
     case 'SUDOKU':
-      return `${baseURL}/sudoku/${roomID}`
+      return `${baseURL}/sudoku/${id}`
     default:
       return baseURL
   }
