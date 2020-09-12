@@ -1,5 +1,6 @@
 import React from 'react'
 import TicTacToeBoard from './TicTacToeBoard'
+import WinnerInfo from './WinnerInfo'
 
 export default class TicTacToeGame extends React.Component {
   constructor(props) {
@@ -93,7 +94,7 @@ export default class TicTacToeGame extends React.Component {
     const gameOverView =
     <div>
       <GameOverInfo
-        currentPlayer={this.state.currentPlayer}
+        player={this.state.player}
         gameOverByResignation={this.state.gameOverByResignation}
         winner={this.state.winner}
       />
@@ -119,7 +120,7 @@ export default class TicTacToeGame extends React.Component {
 function TurnInfo(props) {
   const { player, currentPlayer } = props
   return (
-    <div className="text-center">
+    <div className="text-center space-y-2">
       <p> You are playing as <span className="font-bold">{player}</span></p>
       {
         player === currentPlayer ?
@@ -130,20 +131,15 @@ function TurnInfo(props) {
   )
 }
 
-function WinnerInfo(props) {
-  // const { currentPlayer, winner } = props
-  return (<h1> Winner info </h1>)
-}
-
 function ResignationInfo(props) {
   // const { currentPlayer, winner } = props
   return (<h2> Resignation info </h2>)
 }
 
 function GameOverInfo(props) {
-  const { currentPlayer, gameOverByResignation, winner } = props
+  const { player, gameOverByResignation, winner } = props
   if (gameOverByResignation)
-    return <ResignationInfo currentPlayer={currentPlayer} winner={winner} />
+    return <ResignationInfo player={player} winner={winner} />
   else
-    return <WinnerInfo currentPlayer={currentPlayer} winner={winner} />
+    return <WinnerInfo player={player} winner={winner} />
 }
