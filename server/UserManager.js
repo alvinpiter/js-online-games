@@ -1,4 +1,5 @@
 const getRandomColor = require('./Colorize')
+const { NicknameTakenError } = require('./Errors')
 
 class UserManager {
   constructor() {
@@ -9,7 +10,7 @@ class UserManager {
 
   addUser(socketID, nickname) {
     if (this.nicknamesSet.has(nickname))
-      throw new Error('Nickname taken, try something else')
+      throw new NicknameTakenError()
 
     const user = {
       socketID,

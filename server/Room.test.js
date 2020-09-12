@@ -1,5 +1,9 @@
 const Room = require('./Room')
 const TicTacToe = require('./TicTacToe')
+const {
+  RoomIsFullError,
+  NicknameTakenError
+} = require('./Errors')
 
 test('create room with invalid game name', () => {
   expect(() => new Room('PUBG')).toThrow('Invalid game name')
@@ -10,7 +14,7 @@ test('addUser when nickname already exists', () => {
 
   room.addUser(1, 'alvin')
 
-  expect(() => room.addUser(2, 'alvin')).toThrow('Nickname taken, try something else')
+  expect(() => room.addUser(2, 'alvin')).toThrowError(NicknameTakenError)
 })
 
 test('addUser when room is full', () => {
@@ -19,7 +23,7 @@ test('addUser when room is full', () => {
   room.addUser(1, 'alvin')
   room.addUser(2, 'teddy')
 
-  expect(() => room.addUser(3, 'smith')).toThrow('Room is full')
+  expect(() => room.addUser(3, 'smith')).toThrowError(RoomIsFullError)
 })
 
 test('addUser success', () => {

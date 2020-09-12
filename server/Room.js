@@ -3,6 +3,9 @@ const MessageManager = require('./MessageManager')
 const TicTacToeManager = require('./TicTacToeManager')
 const SudokuManager = require('./SudokuManager')
 const ReversiManager = require('./ReversiManager')
+const {
+  RoomIsFullError
+} = require('./Errors')
 
 class Room {
   constructor(gameCode) {
@@ -27,7 +30,7 @@ class Room {
 
   addUser(socketID, nickname) {
     if (this.getNumberOfUsers() === this.gameManager.getNumberOfPlayers())
-      throw new Error('Room is full')
+      throw new RoomIsFullError()
 
     return this.userManager.addUser(socketID, nickname)
   }

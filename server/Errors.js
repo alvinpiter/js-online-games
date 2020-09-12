@@ -30,10 +30,26 @@ class RoomIsNotFullError extends Error {
   }
 }
 
+class RoomIsFullError extends Error {
+  constructor(data) {
+    super('Room is full')
+    this.name = 'RoomIsFullError'
+    this.data = data
+  }
+}
+
 class GameHasNotStartedError extends Error {
   constructor(data) {
     super('Game has not started')
     this.name = 'GameHasNotStartedError'
+    this.data = data
+  }
+}
+
+class NicknameTakenError extends Error {
+  constructor(data) {
+    super('Nickname taken, try something else')
+    this.name = 'NicknameTakenError'
     this.data = data
   }
 }
@@ -43,5 +59,7 @@ module.exports = {
   CellIsNotEmptyError,
   SudokuCellMismatchError,
   RoomIsNotFullError,
-  GameHasNotStartedError
+  RoomIsFullError,
+  GameHasNotStartedError,
+  NicknameTakenError
 }
