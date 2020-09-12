@@ -6,6 +6,7 @@ import ChatBox from './ChatBox'
 import TicTacToeGame from './TicTacToeGame'
 import ReversiGame from './ReversiGame'
 import SudokuGame from './SudokuGame'
+import Container from './Container'
 
 /*
 There are 4 possible stages:
@@ -156,7 +157,7 @@ export default class RoomPage extends React.Component {
     }
 
     const gameDiv =
-    <div className="bg-blue-200 flex justify-center p-4">
+    <div className="bg-green-100 flex justify-center p-4">
       {gameComponent}
     </div>
 
@@ -225,17 +226,27 @@ export default class RoomPage extends React.Component {
       </div>
     </div>
 
-    switch (this.state.stage) {
-      case 'USER_OUT':
-        return userOutView
-      case 'USER_IN':
-        return userInView
-      case 'USER_PLAYING':
-        return userPlayingView
-      case 'GAME_OVER':
-        return gameOverView
-      default:
-        return null
+    const renderViewByStage = (stage) => {
+      switch (stage) {
+        case 'USER_OUT':
+          return userOutView
+        case 'USER_IN':
+          return userInView
+        case 'USER_PLAYING':
+          return userPlayingView
+        case 'GAME_OVER':
+          return gameOverView
+        default:
+          return null
+      }
     }
+
+    return (
+      <div>
+        <Container>
+          {renderViewByStage(this.state.stage)}
+        </Container>
+      </div>
+    )
   }
 }
