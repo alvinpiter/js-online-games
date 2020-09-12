@@ -11,7 +11,10 @@ class TicTacToeManager {
     if (users.length !== 2)
       throw new Error('Room is not full yet')
 
+    this.socketToPlayerMap.clear()
+
     this.game.reset()
+    this.playing = true
 
     let result = []
 
@@ -36,8 +39,6 @@ class TicTacToeManager {
         })
       }
     }
-
-    this.playing = true
 
     for (let r of result) {
       this.socketToPlayerMap.set(r.user.socketID, r.payload.player)
