@@ -1,7 +1,7 @@
 import React from 'react'
-import UserSpan from './UserSpan'
 import ScoreTable from './ScoreTable'
 import SudokuBoard from './SudokuBoard'
+import ResignationInfo from './ResignationInfo'
 
 export default class SudokuGame extends React.Component {
   constructor(props) {
@@ -121,7 +121,7 @@ function GameOverInfo(props) {
     <div>
       {
         gameOverByResignation ?
-        <p><UserSpan user={resigner} /> ends the game</p> :
+        <ResignationInfo user={resigner} /> :
         <p> Game over! </p>
       }
     </div>

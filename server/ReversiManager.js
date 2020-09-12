@@ -75,11 +75,11 @@ class ReversiManager {
   }
 
   resign(user) {
-    const player = this.socketToPlayerMap.get(user.socketID)
-
     this.playing = false
 
-    return { winner: this.game.getOppositePlayer(player) }
+    return {
+      resigner: user
+    }
   }
 
   getSortedScores(scoreObj) {

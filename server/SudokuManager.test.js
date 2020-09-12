@@ -118,3 +118,11 @@ test('move success and game is over', () => {
   ])
   expect(result.gameOver).toEqual(true)
 })
+
+test('resign', () => {
+  const manager = new SudokuManager()
+
+  manager.startGame(users[0], users)
+  expect(manager.resign(users[0])).toEqual({resigner: users[0]})
+  expect(manager.isPlaying()).toEqual(false)
+})

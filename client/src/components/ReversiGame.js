@@ -2,6 +2,7 @@ import React from 'react'
 import ReversiBoard from './ReversiBoard'
 import ScoreTable from './ScoreTable'
 import WinnerInfo from './WinnerInfo'
+import ResignationInfo from './ResignationInfo'
 
 export default class ReversiGame extends React.Component {
   constructor(props) {
@@ -68,10 +69,11 @@ export default class ReversiGame extends React.Component {
   }
 
   handleResignAccepted(data) {
+    const { resigner } = data
     this.setState({
       stage: 'GAME_OVER',
       gameOverByResignation: true,
-      winner: data.winner
+      resigner
     })
   }
 
@@ -100,9 +102,10 @@ export default class ReversiGame extends React.Component {
     const gameOverView =
     <div className="space-y-2">
       <GameOverInfo
-        player={this.state.player}
         gameOverByResignation={this.state.gameOverByResignation}
+        resigner={this.state.resigner}
         winner={this.state.winner}
+        player={this.state.player}
       />
       <ScoreTable
         scores={this.state.scores}
@@ -140,15 +143,10 @@ function TurnInfo(props) {
   )
 }
 
-function ResignationInfo(props) {
-  // const { currentPlayer, winner } = props
-  return (<h2> Resignation info </h2>)
-}
-
 function GameOverInfo(props) {
-  const { player, gameOverByResignation, winner } = props
+  const { gameOverByResignation, resigner, winner, player } = props
   if (gameOverByResignation)
-    return <ResignationInfo player={player} winner={winner} />
+    return <ResignationInfo resigner={resigner} />
   else
     return <WinnerInfo player={player} winner={winner} />
 }

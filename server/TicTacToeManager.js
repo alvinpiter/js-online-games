@@ -78,11 +78,9 @@ class TicTacToeManager {
   }
 
   resign(user) {
-    const player = this.socketToPlayerMap.get(user.socketID)
-
     this.playing = false
     return {
-      winner: (player === 'X' ? 'O' : 'X')
+      resigner: user
     }
   }
 }
