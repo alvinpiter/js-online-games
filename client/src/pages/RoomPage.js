@@ -184,7 +184,7 @@ export default class RoomPage extends React.Component {
     </div>
 
     const resignButtonDiv =
-    <div className="w-full flex justify-center p-4">
+    <div className="w-full flex justify-center p-4 pb-0">
       <Button
         color="primary"
         variant="contained"
@@ -211,7 +211,7 @@ export default class RoomPage extends React.Component {
         {chatBox}
       </div>
 
-      <div className="w-2/3">
+      <div className="w-2/3 space-y-2">
         {resignButtonDiv}
         {gameDiv}
       </div>
@@ -223,7 +223,7 @@ export default class RoomPage extends React.Component {
         {chatBox}
       </div>
 
-      <div className="w-2/3">
+      <div className="w-2/3 space-y-2">
         {playButtonDiv}
         {gameDiv}
       </div>
