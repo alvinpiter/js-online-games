@@ -1,4 +1,3 @@
-const parseSudoku = require('./utils')
 const {
   OutOfBoundsError,
   CellIsNotEmptyError,
