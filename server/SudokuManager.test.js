@@ -12,7 +12,7 @@ const solution = [
   [1, 4, 9, 6, 2, 3, 5, 7, 8]
 ]
 const {
-  CellIsBlockedError
+  CellIsBlockedError, SudokuCellMismatchError
 } = require('./Errors')
 
 const users = [
@@ -53,18 +53,18 @@ test('startGame', () => {
   }
 })
 
-test('move with invalid row/column', () => {
+test('move when game throws an error', () => {
   const manager = new SudokuManager()
 
   const mockAssign = jest.fn()
   mockAssign.mockImplementation(() => {
-    throw new Error('Invalid row or column')
+    throw new Error('Some error')
   })
   Sudoku.prototype.assign = mockAssign
 
   manager.startGame(users[0], users)
 
-  expect(() => manager.move(users[0], { row: 0, column: -1, value: 1 })).toThrow('Invalid row or column')
+  expect(() => manager.move(users[0], { row: 0, column: 0, value: 1 })).toThrow('Some error')
   for (let row = 0; row < 9; row++) {
     for (let column = 0; column < 9; column++) {
       expect(manager.userBlockedCells.get(users[0].socketID)[row][column]).toEqual(false)
@@ -75,6 +75,21 @@ test('move with invalid row/column', () => {
   for (let user of users) {
     expect(manager.userScores.get(user.socketID)).toEqual(0)
   }
+})
+
+test('move when game throws SudokuCellMismatchError', () => {
+  const manager = new SudokuManager()
+
+  const mockAssign = jest.fn()
+  mockAssign.mockImplementation(() => {
+    throw new SudokuCellMismatchError
+  })
+  Sudoku.prototype.assign = mockAssign
+
+  manager.startGame(users[0], users)
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrow(SudokuCellMismatchError)
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrow(CellIsBlockedError)
 })
 
 test('move on blocked cell', () => {
