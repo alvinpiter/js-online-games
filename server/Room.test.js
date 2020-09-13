@@ -1,5 +1,4 @@
 const Room = require('./Room')
-const TicTacToe = require('./TicTacToe')
 const {
   RoomIsFullError,
   GameIsOnGoingError,
