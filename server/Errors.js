@@ -14,6 +14,14 @@ class CellIsNotEmptyError extends Error {
   }
 }
 
+class CellIsBlockedError extends Error {
+  constructor(data) {
+    super('Cell is blocked')
+    this.name = 'CellIsBlockedError'
+    this.data = data
+  }
+}
+
 class SudokuCellMismatchError extends Error {
   constructor(data) {
     super('Mismatch with solution')
@@ -65,6 +73,7 @@ class GameIsOnGoingError extends Error {
 module.exports = {
   OutOfBoundsError,
   CellIsNotEmptyError,
+  CellIsBlockedError,
   SudokuCellMismatchError,
   RoomIsNotFullError,
   RoomIsFullError,

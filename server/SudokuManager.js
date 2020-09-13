@@ -1,6 +1,6 @@
 const Sudoku = require('./Sudoku')
 const getRandomPuzzleAndSolution = require('./sudokuHelper')
-const { SudokuCellMismatchError } = require('./Errors')
+const { SudokuCellMismatchError, CellIsBlockedError } = require('./Errors')
 
 class SudokuManager {
   constructor() {
@@ -61,6 +61,9 @@ class SudokuManager {
       throw new Error('Game has not started yet')
 
     const { row, column, value } = payload
+
+    if (this.userBlockedCells.get(user.socketID)[row][column])
+      throw new CellIsBlockedError()
 
     try {
       const board = this.game.assign(row, column, value)

@@ -11,6 +11,9 @@ const solution = [
   [9, 1, 2, 4, 7, 6, 3, 8, 5],
   [1, 4, 9, 6, 2, 3, 5, 7, 8]
 ]
+const {
+  CellIsBlockedError
+} = require('./Errors')
 
 const users = [
   { socketID: 1, nickname: 'alvin', color: 'RED' },
@@ -74,7 +77,13 @@ test('move with invalid row/column', () => {
   }
 })
 
-test('move where given number mismatch with the solution', () => {
+test('move on blocked cell', () => {
+  const manager = new SudokuManager()
+
+  manager.startGame(users[0], users)
+  manager.blockCell(users[0], 0, 0)
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrowError(CellIsBlockedError)
 })
 
 test('move success but game is not over yet', () => {
