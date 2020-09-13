@@ -63,7 +63,7 @@ export default class SudokuGame extends React.Component {
 
     console.log(message)
     if (data !== undefined)
-      this.setState({ blockedCells: data.data.blockedCells })
+      this.setState({ blockedCells: data.blockedCells })
   }
 
   handleResignAccepted(data) {

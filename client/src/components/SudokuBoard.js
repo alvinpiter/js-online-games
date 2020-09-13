@@ -89,7 +89,7 @@ function SudokuCell(props) {
       className={cellClass}
       onClick={onSelectCell}
     >
-      {number}
+      {number === 0 ? null : number}
     </div>
   )
 }

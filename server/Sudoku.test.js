@@ -4,17 +4,39 @@ const {
   CellIsNotEmptyError,
   SudokuCellMismatchError
 } = require('./Errors')
-const puzzleString = '004300209005009001070060043006002087190007400050083000600000105003508690042910300'
-const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
+
+const puzzle = [
+  [2, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+const solution = [
+  [3, 8, 4, 7, 5, 2, 1, 9, 6],
+  [7, 2, 8, 9, 1, 4, 6, 5, 3],
+  [6, 7, 5, 8, 3, 9, 4, 1, 2],
+  [4, 5, 7, 3, 8, 1, 2, 6, 9],
+  [5, 9, 3, 1, 6, 8, 7, 2, 4],
+  [2, 3, 6, 5, 9, 7, 8, 4, 1],
+  [8, 6, 1, 2, 4, 5, 9, 3, 7],
+  [9, 1, 2, 4, 7, 6, 3, 8, 5],
+  [1, 4, 9, 6, 2, 3, 5, 7, 8]
+]
 
 test('assign to non-empty cell', () => {
-  const sudoku = new Sudoku(puzzleString, solutionString)
+  const sudoku = new Sudoku(puzzle, solution)
 
-  expect(() => sudoku.assign(0, 2, 1)).toThrowError(CellIsNotEmptyError)
+  expect(() => sudoku.assign(0, 0, 1)).toThrowError(CellIsNotEmptyError)
 })
 
 test('assign to invalid row or column', () => {
-  const sudoku = new Sudoku(puzzleString, solutionString)
+  const sudoku = new Sudoku(puzzle, solution)
 
   const invalids = [
     [undefined, 0, 1],
@@ -31,17 +53,17 @@ test('assign to invalid row or column', () => {
 })
 
 test('assign does not match solution', () => {
-  const sudoku = new Sudoku(puzzleString, solutionString)
+  const sudoku = new Sudoku(puzzle, solution)
 
-  expect(() => sudoku.assign(0, 0, 1)).toThrowError(SudokuCellMismatchError)
+  expect(() => sudoku.assign(0, 1, 3)).toThrowError(SudokuCellMismatchError)
 })
 
 test('hasEnded', () => {
-  const testCases = [ puzzleString, solutionString ]
+  const testCases = [ puzzle, solution ]
   const expectations = [ false, true ]
 
   for (let i = 0; i < testCases.length; i++) {
-    const sudoku = new Sudoku(testCases[i], solutionString)
+    const sudoku = new Sudoku(testCases[i], solution)
     expect(sudoku.hasEnded()).toEqual(expectations[i])
   }
 })

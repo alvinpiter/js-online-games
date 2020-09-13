@@ -1,11 +1,10 @@
 const Sudoku = require('./Sudoku')
+const getRandomPuzzleAndSolution = require('./sudokuHelper')
 const { SudokuCellMismatchError } = require('./Errors')
-const puzzleString = '064371259025849761901265843430192587198057432257403916689734125713528694542916378'
-const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
 
 class SudokuManager {
   constructor() {
-    this.game = new Sudoku(puzzleString, solutionString)
+    this.game = null
     this.userDetails = new Map()
     this.userBlockedCells = new Map()
     this.userScores = new Map()
@@ -22,7 +21,9 @@ class SudokuManager {
     for (let row = 0; row < 9; row++)
       this.cellColors.push(new Array(null, null, null, null, null, null, null, null, null))
     this.playing = true
-    this.game = new Sudoku(puzzleString, solutionString)
+
+    const { puzzle, solution } = getRandomPuzzleAndSolution(15)
+    this.game = new Sudoku(puzzle, solution)
 
     for (let user of users) {
       const socketID = user.socketID
