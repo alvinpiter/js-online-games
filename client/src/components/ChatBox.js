@@ -77,14 +77,14 @@ export default class ChatBox extends React.Component {
       <div className="space-y-2">
         <h1 className="text-center text-2xl font-bold"> Chat Box </h1>
 
-        <div className="w-full p-2 bg-green-100">
+        <div className="w-full p-2 bg-green-100 border border-black">
           Online users:
           {
             this.state.users.map((user, index) => <span key={index} className="ml-2"><UserSpan user={user} /></span>)
           }
         </div>
 
-        <div className="w-full h-64 overflow-auto p-2 bg-green-100" ref={this.messagesDivRef}>
+        <div className="w-full h-64 overflow-auto p-2 bg-green-100 border border-black" ref={this.messagesDivRef}>
           {
             this.state.messages.map((msg, index) =>
               <p key={index}><UserSpan user={msg.user}/>: {msg.text}</p>
