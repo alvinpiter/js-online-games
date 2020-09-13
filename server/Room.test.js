@@ -34,44 +34,6 @@ test('addMessage when invalid socketID', () => {
   expect(() => room.addMessage(1, 'hehe')).toThrow('Invalid socketID')
 })
 
-test('addMessage success', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-
-  room.addMessage(1, 'from alvin')
-
-  const message = room.addMessage(2, 'from teddy')
-  expect(message).toEqual({
-    user: { nickname: 'teddy', socketID: 2, color: expect.any(String) },
-    text: 'from teddy'
-  })
-
-  const messageHistories = room.getMessages()
-  expect(messageHistories).toEqual([
-    {
-      user: { nickname: 'alvin', socketID: 1, color: expect.any(String) },
-      text: 'from alvin'
-    },
-    {
-      user: { nickname: 'teddy', socketID: 2, color: expect.any(String) },
-      text: 'from teddy'
-    }
-  ])
-})
-
-test('addMessage only maintain last 50 messages', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-
-  for (let i = 0; i < 55; i++)
-    room.addMessage(1, 'from alvin')
-
-  expect(room.getMessages().length).toEqual(50)
-})
-
 test('startGame when room is not full yet', () => {
   const room = new Room('TICTACTOE')
 
