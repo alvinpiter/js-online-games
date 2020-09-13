@@ -1,5 +1,5 @@
 const UserManager = require('./UserManager')
-const { NicknameTakenError } = require('./Errors')
+const { NicknameTakenError, InvalidSocketIDError } = require('./Errors')
 const users = [
   { socketID: 1, nickname: 'alvin' },
   { socketID: 2, nickname: 'teddy' }
@@ -33,7 +33,7 @@ test('addUser when success', () => {
 test('removeUser when socketID is invalid', () => {
   const manager = new UserManager()
 
-  expect(() => manager.removeUser(1)).toThrow('Invalid socketID')
+  expect(() => manager.removeUser(1)).toThrowError(InvalidSocketIDError)
 })
 
 test('removeUser when success', () => {
@@ -50,7 +50,7 @@ test('removeUser when success', () => {
       color: expect.any(String)
     })
 
-    expect(() => manager.getUser(user.socketID)).toThrow('Invalid socketID')
+    expect(() => manager.getUser(user.socketID)).toThrowError(InvalidSocketIDError)
   }
 
   expect(manager.nicknamesSet.size).toEqual(0)

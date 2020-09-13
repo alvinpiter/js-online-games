@@ -1,5 +1,5 @@
 const getRandomColor = require('./Colorize')
-const { NicknameTakenError } = require('./Errors')
+const { NicknameTakenError, InvalidSocketIDError } = require('./Errors')
 
 class UserManager {
   constructor() {
@@ -42,7 +42,7 @@ class UserManager {
   getUser(socketID) {
     const user = this.usersMap.get(socketID)
     if (user === undefined)
-      throw new Error('Invalid socketID')
+      throw new InvalidSocketIDError()
     else
       return user
   }

@@ -51,6 +51,8 @@ test('startGame', () => {
     for (let column = 0; column < 9; column++)
       expect(manager.cellColors[row][column]).toEqual(null)
   }
+
+  expect(manager.isPlaying()).toEqual(true)
 })
 
 test('move when game throws an error', () => {

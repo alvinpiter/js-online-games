@@ -70,6 +70,14 @@ class GameIsOnGoingError extends Error {
   }
 }
 
+class InvalidSocketIDError extends Error {
+  constructor(data) {
+    super('Invalid socketID')
+    this.name = 'InvalidSocketIDError'
+    this.data = data
+  }
+}
+
 module.exports = {
   OutOfBoundsError,
   CellIsNotEmptyError,
@@ -79,5 +87,6 @@ module.exports = {
   RoomIsFullError,
   GameHasNotStartedError,
   NicknameTakenError,
-  GameIsOnGoingError
+  GameIsOnGoingError,
+  InvalidSocketIDError,
 }

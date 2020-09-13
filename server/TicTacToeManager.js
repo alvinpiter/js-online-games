@@ -1,4 +1,8 @@
 const TicTacToe = require('./TicTacToe')
+const {
+  RoomIsNotFullError,
+  GameHasNotStartedError
+} = require('./Errors')
 
 class TicTacToeManager {
   constructor() {
@@ -9,7 +13,7 @@ class TicTacToeManager {
 
   startGame(actor, users) {
     if (users.length !== 2)
-      throw new Error('Room is not full yet')
+      throw new RoomIsNotFullError()
 
     this.socketToPlayerMap.clear()
 
@@ -49,24 +53,22 @@ class TicTacToeManager {
 
   move(user, payload) {
     if (!this.playing)
-      throw new Error('Game has not started yet')
+      throw new GameHasNotStartedError()
 
     const player = this.socketToPlayerMap.get(user.socketID)
-    try {
-      const board = this.game.move(player, payload)
-      const currentPlayer = this.game.getCurrentPlayer()
 
-      let result = { currentPlayer, board }
+    const board = this.game.move(player, payload)
+    const currentPlayer = this.game.getCurrentPlayer()
 
-      if (this.game.hasEnded()) {
-        result.gameOverInfo = { winner: this.game.getWinner() }
-        this.playing = false
-      }
+    let result = { currentPlayer, board }
 
-      return result
-    } catch(e) {
-      throw e
+    if (this.game.hasEnded()) {
+      result.gameOverInfo = { winner: this.game.getWinner() }
+      this.playing = false
     }
+
+    return result
+
   }
 
   getNumberOfPlayers() {

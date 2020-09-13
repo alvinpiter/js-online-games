@@ -44,8 +44,7 @@ test('startGame success', () => {
 
   const result = manager.startGame(users[0], users)
   for (let r of result) {
-    const user = r.user
-    const payload = r.payload
+    const { user, payload } = r
 
     expect(payload.currentPlayer).toEqual('W')
     expect(payload.board).toEqual(startingBoard)
@@ -54,10 +53,10 @@ test('startGame success', () => {
     expect(payload.scores[0].score).toEqual(2)
     expect(payload.scores[1].score).toEqual(2)
 
-    if (user.socketID === 1)
+    if (user.socketID === users[0].socketID)
       expect(payload.player).toEqual('W')
 
-    if (user.socketID === 2)
+    if (user.socketID === users[1].socketID)
       expect(payload.player).toEqual('B')
   }
 

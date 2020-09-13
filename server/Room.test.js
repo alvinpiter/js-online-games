@@ -2,8 +2,8 @@ const Room = require('./Room')
 const TicTacToe = require('./TicTacToe')
 const {
   RoomIsFullError,
-  NicknameTakenError,
-  GameIsOnGoingError
+  GameIsOnGoingError,
+  InvalidSocketIDError
 } = require('./Errors')
 
 test('create room with invalid game name', () => {
@@ -28,60 +28,16 @@ test('addUser when game is on going', () => {
   expect(() => room.addUser(2, 'teddy')).toThrowError(GameIsOnGoingError)
 })
 
-test('addMessage when invalid socketID', () => {
+test('addMessage when socketID is invalid', () => {
   const room = new Room('TICTACTOE')
 
-  expect(() => room.addMessage(1, 'hehe')).toThrow('Invalid socketID')
+  expect(() => room.addMessage(1, 'hehe')).toThrowError(InvalidSocketIDError)
 })
 
-test('startGame when room is not full yet', () => {
+test('startGame when socketID is invalid', () => {
   const room = new Room('TICTACTOE')
 
-  room.addUser(1, 'alvin')
-
-  expect(() => room.startGame(1)).toThrow('Room is not full yet')
-})
-
-test('startGame success', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-
-  const result = room.startGame(1)
-
-  expect(result.length).toEqual(2)
-  for (let r of result) {
-    const user = r.user
-    const payload = r.payload
-
-    if (user.socketID === 1) {
-      expect(payload).toEqual({
-        currentPlayer: 'X',
-        player: 'X',
-        board: [[null, null, null], [null, null, null], [null, null, null]]
-      })
-    }
-
-    if (user.socketID === 2) {
-      expect(payload).toEqual({
-        currentPlayer: 'X',
-        player: 'O',
-        board: [[null, null, null], [null, null, null], [null, null, null]]
-      })
-    }
-  }
-
-  expect(room.isPlaying()).toEqual(true)
-})
-
-test('move when game has not started yet', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-
-  expect(() => room.move(1, {row: 0, column: 0})).toThrow('Game has not started yet')
+  expect(() => room.startGame(1)).toThrowError(InvalidSocketIDError)
 })
 
 test('move when socketID is invalid', () => {
@@ -91,93 +47,5 @@ test('move when socketID is invalid', () => {
   room.addUser(2, 'teddy')
   room.startGame(1)
 
-  expect(() => room.move(3, {row: 0, column: 0})).toThrow('Invalid socketID')
-})
-
-test('move when game throw an error', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-  room.startGame(1)
-
-  const mockMove = jest.fn()
-  mockMove.mockImplementation(() => {
-    throw new Error('Some error')
-  })
-
-  TicTacToe.prototype.move = mockMove
-
-  expect(() => room.move(1, {row: 0, column: 0})).toThrow('Some error')
-})
-
-test('move success and game has not ended', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-  room.startGame(1)
-
-  const newBoard = [
-    ['X', null, null],
-    [null, null, null],
-    [null, null, null]
-  ]
-
-  const mockMove = jest.fn()
-  mockMove.mockReturnValue(newBoard)
-  TicTacToe.prototype.move = mockMove
-
-  const mockHasEnded = jest.fn()
-  mockHasEnded.mockReturnValue(false)
-  TicTacToe.prototype.hasEnded = mockHasEnded
-
-  const mockGetCurrentPlayer = jest.fn()
-  mockGetCurrentPlayer.mockReturnValue('O')
-  TicTacToe.prototype.getCurrentPlayer = mockGetCurrentPlayer
-
-  const result = room.move(1, {row: 0, column: 0})
-
-  expect(result).toEqual({
-    currentPlayer: 'O',
-    board: newBoard
-  })
-})
-
-test('move success and game has ended', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-  room.addUser(2, 'teddy')
-  room.startGame(1)
-
-  const newBoard = [
-    ['X', null, null],
-    [null, null, null],
-    [null, null, null]
-  ]
-
-  const mockMove = jest.fn()
-  mockMove.mockReturnValue(newBoard)
-  TicTacToe.prototype.move = mockMove
-
-  const mockHasEnded = jest.fn()
-  mockHasEnded.mockReturnValue(true)
-  TicTacToe.prototype.hasEnded = mockHasEnded
-
-  const mockGetCurrentPlayer = jest.fn()
-  mockGetCurrentPlayer.mockReturnValue('O')
-  TicTacToe.prototype.getCurrentPlayer = mockGetCurrentPlayer
-
-  const mockGetWinner = jest.fn()
-  mockGetWinner.mockReturnValue('X')
-  TicTacToe.prototype.getWinner = mockGetWinner
-
-  const result = room.move(1, {row: 0, column: 0})
-
-  expect(result).toEqual({
-    currentPlayer: 'O',
-    board: newBoard,
-    gameOverInfo: { winner: 'X' }
-  })
+  expect(() => room.move(3, {row: 0, column: 0})).toThrowError(InvalidSocketIDError)
 })
