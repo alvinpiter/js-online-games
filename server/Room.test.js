@@ -10,14 +10,6 @@ test('create room with invalid game name', () => {
   expect(() => new Room('PUBG')).toThrow('Invalid game name')
 })
 
-test('addUser when nickname already exists', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-
-  expect(() => room.addUser(2, 'alvin')).toThrowError(NicknameTakenError)
-})
-
 test('addUser when room is full', () => {
   const room = new Room('TICTACTOE')
 
@@ -34,34 +26,6 @@ test('addUser when game is on going', () => {
   room.startGame(1)
 
   expect(() => room.addUser(2, 'teddy')).toThrowError(GameIsOnGoingError)
-})
-
-test('addUser success', () => {
-  const room = new Room('TICTACTOE')
-
-  const user = room.addUser(1, 'alvin')
-
-  expect(user.nickname).toEqual('alvin')
-  expect(user.color).not.toEqual(undefined)
-  expect(room.getNumberOfUsers()).toEqual(1)
-})
-
-test('removeUser when invalid socketID', () => {
-  const room = new Room('TICTACTOE')
-
-  expect(() => room.removeUser(1)).toThrow('Invalid socketID')
-})
-
-test('removeUser success', () => {
-  const room = new Room('TICTACTOE')
-
-  room.addUser(1, 'alvin')
-
-  const user = room.removeUser(1)
-
-  expect(user.nickname).toEqual('alvin')
-  expect(user.color).not.toEqual(undefined)
-  expect(room.getNumberOfUsers()).toEqual(0)
 })
 
 test('addMessage when invalid socketID', () => {
