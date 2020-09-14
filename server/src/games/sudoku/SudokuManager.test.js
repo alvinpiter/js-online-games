@@ -12,7 +12,7 @@ const solution = [
   [1, 4, 9, 6, 2, 3, 5, 7, 8]
 ]
 const {
-  CellIsBlockedError, SudokuCellMismatchError
+  CellIsBlockedError, SudokuCellMismatchError, GameHasNotStartedError
 } = require('../../errors')
 
 const users = [
@@ -53,6 +53,12 @@ test('startGame', () => {
   }
 
   expect(manager.isPlaying()).toEqual(true)
+})
+
+test('move when game has not started', () => {
+  const manager = new SudokuManager()
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrowError(GameHasNotStartedError)
 })
 
 test('move when game throws an error', () => {

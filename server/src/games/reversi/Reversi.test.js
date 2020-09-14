@@ -1,4 +1,10 @@
 const Reversi = require('./Reversi')
+const {
+  CellIsNotEmptyError,
+  OutOfBoundsError,
+  InvalidMoveError,
+  NotYourTurnError
+} = require('../../errors')
 
 test('reset', () => {
   const game = new Reversi()
@@ -29,25 +35,25 @@ test('getPlayers', () => {
 test('move with invalid player', () => {
   const game = new Reversi()
 
-  expect(() => game.move('B', {row: 3, column: 2})).toThrow("It's not your turn")
+  expect(() => game.move('B', {row: 3, column: 2})).toThrowError(NotYourTurnError)
 })
 
 test('move with invalid row or column', () => {
   const game = new Reversi()
 
-  expect(() => game.move('W', {row: -1, column: 0})).toThrow("Invalid move")
+  expect(() => game.move('W', {row: -1, column: 0})).toThrowError(OutOfBoundsError)
 })
 
 test('move to occupied cell', () => {
   const game = new Reversi()
 
-  expect(() => game.move('W', {row: 4, column: 4})).toThrow("Cell is not empty")
+  expect(() => game.move('W', {row: 4, column: 4})).toThrowError(CellIsNotEmptyError)
 })
 
 test('move that does not flip any cell', () => {
   const game = new Reversi()
 
-  expect(() => game.move('W', {row: 0, column: 0})).toThrow("Invalid move")
+  expect(() => game.move('W', {row: 0, column: 0})).toThrowError(InvalidMoveError)
 })
 
 test('move success', () => {

@@ -1,6 +1,6 @@
 const Sudoku = require('./Sudoku')
 const getRandomPuzzleAndSolution = require('../../helpers/sudoku')
-const { SudokuCellMismatchError, CellIsBlockedError } = require('../../errors')
+const { SudokuCellMismatchError, CellIsBlockedError, GameHasNotStartedError } = require('../../errors')
 
 class SudokuManager {
   constructor() {
@@ -58,7 +58,7 @@ class SudokuManager {
 
   move(user, payload) {
     if (!this.playing)
-      throw new Error('Game has not started yet')
+      throw new GameHasNotStartedError()
 
     const { row, column, value } = payload
 

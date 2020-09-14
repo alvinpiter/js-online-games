@@ -1,3 +1,10 @@
+const {
+  NotYourTurnError,
+  InvalidMoveError,
+  CellIsNotEmptyError,
+  OutOfBoundsError
+} = require('../../errors')
+
 class Reversi {
   constructor() {
     this.players = ['W', 'B']
@@ -55,17 +62,17 @@ class Reversi {
 
   move(player, { row, column }) {
     if (player !== this.currentPlayer)
-      throw new Error("It's not your turn")
+      throw new NotYourTurnError()
 
     if (!this.isInsideBoard(row, column))
-      throw new Error("Invalid move")
+      throw new OutOfBoundsError()
 
     if (this.board[row][column] !== null)
-      throw new Error("Cell is not empty")
+      throw new CellIsNotEmptyError()
 
     const flippedCells = this.getFlippedCells(player, row, column)
     if (flippedCells.length === 0)
-      throw new Error("Invalid move")
+      throw new InvalidMoveError()
 
     this.flipCells(flippedCells)
     this.board[row][column] = player

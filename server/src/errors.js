@@ -78,6 +78,22 @@ class InvalidSocketIDError extends Error {
   }
 }
 
+class InvalidMoveError extends Error {
+  constructor(data) {
+    super('Invalid move')
+    this.name = 'InvalidMoveError'
+    this.data = data
+  }
+}
+
+class NotYourTurnError extends Error {
+  constructor(data) {
+    super("It's not your turn")
+    this.name = 'NotYourTurnError'
+    this.data = data
+  }
+}
+
 module.exports = {
   OutOfBoundsError,
   CellIsNotEmptyError,
@@ -89,4 +105,6 @@ module.exports = {
   NicknameTakenError,
   GameIsOnGoingError,
   InvalidSocketIDError,
+  InvalidMoveError,
+  NotYourTurnError
 }

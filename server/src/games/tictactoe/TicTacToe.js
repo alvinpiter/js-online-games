@@ -1,3 +1,9 @@
+const {
+  NotYourTurnError,
+  OutOfBoundsError,
+  CellIsNotEmptyError
+} = require('../../errors')
+
 class TicTacToe {
   constructor() {
     this.reset()
@@ -31,16 +37,16 @@ class TicTacToe {
 
   move(player, {row, column}) {
     if (player !== this.currentPlayer)
-      throw new Error("It's not your turn")
+      throw new NotYourTurnError()
 
     if (row === undefined || column === undefined)
-      throw new Error("Invalid move")
+      throw new OutOfBoundsError()
 
     if (row < 0 || row >= 3 || column < 0 || column >= 3)
-      throw new Error("Invalid move")
+      throw new OutOfBoundsError()
 
     if (this.board[row][column] !== null)
-      throw new Error("Cell is not empty")
+      throw new CellIsNotEmptyError()
 
     this.board[row][column] = this.currentPlayer
     this.currentPlayer = this.getNextPlayer()
