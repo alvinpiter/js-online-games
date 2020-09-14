@@ -18,7 +18,6 @@ function generateSolutionRecursively(board, row, column) {
   const shuffledNumbers = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9])
   for (let number of shuffledNumbers) {
     //Check if we can put number at (row, column)
-    //If can, put it then break.
 
     let can = true
 
