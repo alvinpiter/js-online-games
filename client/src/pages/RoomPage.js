@@ -34,7 +34,10 @@ export default class RoomPage extends React.Component {
   }
 
   componentDidMount() {
-    this.socket = io("http://localhost:5000")
+    document.title = `JS Games | ${getGameNameFromCode(this.props.gameCode)}`
+    const GAME_SERVER_HOST = process.env.REACT_APP_GAME_SERVER_HOST
+
+    this.socket = io(GAME_SERVER_HOST)
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
       const { user } = data

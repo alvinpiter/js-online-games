@@ -15,7 +15,7 @@ export default function HomePage(props) {
 
   useEffect(() => {
     const loadGames = async () => {
-      const result = await fetch('http://localhost:5000/games')
+      const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/games`)
       const jsonResult = await result.json()
 
       setIsLoadingGames(false)
@@ -23,6 +23,7 @@ export default function HomePage(props) {
     }
 
     loadGames()
+    document.title = 'JS Games | Home'
   }, [])
 
   const onChangeGame = (event, value) => {
@@ -33,7 +34,7 @@ export default function HomePage(props) {
     const loadRoom = async () => {
       setIsLoadingRoom(true)
 
-      const result = await fetch('http://localhost:5000/rooms', {
+      const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/rooms`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gameCode: selectedGameCode })
@@ -133,7 +134,7 @@ function RoomInfo(props) {
 function getRoomURL(room) {
   const { id, gameCode } = room
 
-  const baseURL = 'http://localhost:3000'
+  const baseURL = window.location.origin
   switch (gameCode) {
     case 'TICTACTOE':
       return `${baseURL}/tic-tac-toe/${id}`
