@@ -3,7 +3,7 @@ const {
   OutOfBoundsError,
   CellIsNotEmptyError,
   SudokuCellMismatchError
-} = require('./Errors')
+} = require('../../errors')
 
 const puzzle = [
   [2, 0, 0, 0, 0, 0, 0, 0, 0],

@@ -1,5 +1,5 @@
 const UserManager = require('./UserManager')
-const { NicknameTakenError, InvalidSocketIDError } = require('./Errors')
+const { NicknameTakenError, InvalidSocketIDError } = require('../errors')
 const users = [
   { socketID: 1, nickname: 'alvin' },
   { socketID: 2, nickname: 'teddy' }

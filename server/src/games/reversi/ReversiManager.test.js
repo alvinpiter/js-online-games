@@ -3,7 +3,7 @@ const {
   RoomIsNotFullError,
   GameHasNotStartedError,
   CellIsNotEmptyError
-} = require('./Errors')
+} = require('../../errors')
 const Reversi = require('./Reversi')
 
 const users = [

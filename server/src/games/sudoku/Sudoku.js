@@ -2,7 +2,7 @@ const {
   OutOfBoundsError,
   CellIsNotEmptyError,
   SudokuCellMismatchError
-} = require('./Errors')
+} = require('../../errors')
 
 class Sudoku {
   constructor(puzzle, solution) {

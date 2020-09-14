@@ -1,5 +1,5 @@
 const TicTacToeManager = require('./TicTacToeManager.js')
-const { GameHasNotStartedError, RoomIsNotFullError } = require('./Errors.js')
+const { GameHasNotStartedError, RoomIsNotFullError } = require('../../errors')
 const TicTacToe = require('./TicTacToe.js')
 
 const users = [

@@ -13,7 +13,7 @@ const solution = [
 ]
 const {
   CellIsBlockedError, SudokuCellMismatchError
-} = require('./Errors')
+} = require('../../errors')
 
 const users = [
   { socketID: 1, nickname: 'alvin', color: 'RED' },

@@ -3,7 +3,7 @@ const {
   RoomIsFullError,
   GameIsOnGoingError,
   InvalidSocketIDError
-} = require('./Errors')
+} = require('../errors')
 
 test('create room with invalid game name', () => {
   expect(() => new Room('PUBG')).toThrow('Invalid game name')

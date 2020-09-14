@@ -2,7 +2,7 @@ const Reversi = require('./Reversi')
 const {
   RoomIsNotFullError,
   GameHasNotStartedError
-} = require('./Errors')
+} = require('../../errors')
 
 class ReversiManager {
   constructor() {

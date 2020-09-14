@@ -1,6 +1,6 @@
 const Sudoku = require('./Sudoku')
-const getRandomPuzzleAndSolution = require('./sudokuHelper')
-const { SudokuCellMismatchError, CellIsBlockedError } = require('./Errors')
+const getRandomPuzzleAndSolution = require('../../helpers/sudoku')
+const { SudokuCellMismatchError, CellIsBlockedError } = require('../../errors')
 
 class SudokuManager {
   constructor() {

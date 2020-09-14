@@ -1,5 +1,5 @@
-const getRandomColor = require('./Colorize')
-const { NicknameTakenError, InvalidSocketIDError } = require('./Errors')
+const getRandomColor = require('../helpers/color')
+const { NicknameTakenError, InvalidSocketIDError } = require('../errors')
 
 class UserManager {
   constructor() {

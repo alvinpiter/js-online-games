@@ -2,7 +2,7 @@ const TicTacToe = require('./TicTacToe')
 const {
   RoomIsNotFullError,
   GameHasNotStartedError
-} = require('./Errors')
+} = require('../../errors')
 
 class TicTacToeManager {
   constructor() {

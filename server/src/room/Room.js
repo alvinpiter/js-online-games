@@ -1,12 +1,12 @@
 const UserManager = require('./UserManager')
 const MessageManager = require('./MessageManager')
-const TicTacToeManager = require('./TicTacToeManager')
-const SudokuManager = require('./SudokuManager')
-const ReversiManager = require('./ReversiManager')
+const TicTacToeManager = require('../games/tictactoe/TicTacToeManager')
+const ReversiManager = require('../games/reversi/ReversiManager')
+const SudokuManager = require('../games/sudoku/SudokuManager')
 const {
   RoomIsFullError,
   GameIsOnGoingError
-} = require('./Errors')
+} = require('../errors')
 
 class Room {
   constructor(gameCode) {
