@@ -1,11 +1,10 @@
 const Sudoku = require('./Sudoku')
-const { SudokuCellMismatchError } = require('./Errors')
-const puzzleString = '064371259025849761901265843430192587198057432257403916689734125713528694542916378'
-const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
+const getRandomPuzzleAndSolution = require('../../helpers/sudoku')
+const { SudokuCellMismatchError, CellIsBlockedError, GameHasNotStartedError } = require('../../errors')
 
 class SudokuManager {
   constructor() {
-    this.game = new Sudoku(puzzleString, solutionString)
+    this.game = null
     this.userDetails = new Map()
     this.userBlockedCells = new Map()
     this.userScores = new Map()
@@ -22,7 +21,9 @@ class SudokuManager {
     for (let row = 0; row < 9; row++)
       this.cellColors.push(new Array(null, null, null, null, null, null, null, null, null))
     this.playing = true
-    this.game = new Sudoku(puzzleString, solutionString)
+
+    const { puzzle, solution } = getRandomPuzzleAndSolution(15)
+    this.game = new Sudoku(puzzle, solution)
 
     for (let user of users) {
       const socketID = user.socketID
@@ -57,9 +58,12 @@ class SudokuManager {
 
   move(user, payload) {
     if (!this.playing)
-      throw new Error('Game has not started yet')
+      throw new GameHasNotStartedError()
 
     const { row, column, value } = payload
+
+    if (this.userBlockedCells.get(user.socketID)[row][column])
+      throw new CellIsBlockedError()
 
     try {
       const board = this.game.assign(row, column, value)
@@ -97,12 +101,12 @@ class SudokuManager {
   }
 
   getSortedScores() {
-    const scores = Array.from(this.userScores).map(entry => {
-      return {
-        user: this.userDetails.get(entry[0]),
-        score: entry[1]
-      }
-    })
+    let scores = []
+    for (let entry of this.userDetails) {
+      const user = entry[1]
+      const score = this.userScores.get(user.socketID)
+      scores.push({ user, score })
+    }
 
     const sortedScores = scores.sort((a, b) => b.score - a.score)
 
@@ -118,6 +122,10 @@ class SudokuManager {
     return {
       resigner: actor
     }
+  }
+
+  isPlaying() {
+    return this.playing
   }
 }
 

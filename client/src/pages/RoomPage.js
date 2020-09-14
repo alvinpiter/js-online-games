@@ -1,11 +1,13 @@
 import React from 'react'
 import io from 'socket.io-client'
 import Button from '@material-ui/core/Button'
-import NicknameForm from './NicknameForm'
-import ChatBox from './ChatBox'
-import TicTacToeGame from './TicTacToeGame'
-import ReversiGame from './ReversiGame'
-import SudokuGame from './SudokuGame'
+import NicknameForm from '../components/NicknameForm'
+import ChatBox from '../components/ChatBox'
+import TicTacToeGame from '../components/TicTacToeGame'
+import ReversiGame from '../components/ReversiGame'
+import SudokuGame from '../components/SudokuGame'
+import Container from '../components/Container'
+import NavBar from '../components/NavBar'
 
 /*
 There are 4 possible stages:
@@ -18,8 +20,6 @@ export default class RoomPage extends React.Component {
   constructor(props) {
     super(props)
 
-    this.gameCode = this.props.gameCode
-    this.roomID = this.props.roomID
     this.socket = null
 
     this.state = {
@@ -27,10 +27,17 @@ export default class RoomPage extends React.Component {
       stage: 'USER_OUT',
       startGameError: null
     }
+
+    this.nicknameFormRef = React.createRef()
+    this.chatBoxRef = React.createRef()
+    this.gameRef = React.createRef()
   }
 
   componentDidMount() {
-    this.socket = io("http://localhost:5000")
+    document.title = `JS Games | ${getGameNameFromCode(this.props.gameCode)}`
+    const GAME_SERVER_HOST = process.env.REACT_APP_GAME_SERVER_HOST
+
+    this.socket = io(GAME_SERVER_HOST)
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
       const { user } = data
@@ -40,23 +47,23 @@ export default class RoomPage extends React.Component {
         stage: 'USER_IN'
       })
 
-      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED', data)
+      this.chatBoxRef.current.handleEvent('JOIN_ROOM_ACCEPTED', data)
     })
 
     this.socket.on('JOIN_ROOM_ACCEPTED_BROADCAST', data => {
-      this.refs.chatBox.handleEvent('JOIN_ROOM_ACCEPTED_BROADCAST', data)
+      this.chatBoxRef.current.handleEvent('JOIN_ROOM_ACCEPTED_BROADCAST', data)
     })
 
     this.socket.on('JOIN_ROOM_REJECTED', data => {
-      this.refs.nicknameForm.handleEvent('JOIN_ROOM_REJECTED', data)
+      this.nicknameFormRef.current.handleEvent('JOIN_ROOM_REJECTED', data)
     })
 
     this.socket.on('LEFT_ROOM_BROADCAST', data => {
-      this.refs.chatBox.handleEvent('LEFT_ROOM_BROADCAST', data)
+      this.chatBoxRef.current.handleEvent('LEFT_ROOM_BROADCAST', data)
     })
 
     this.socket.on('BROADCAST_MESSAGE', data => {
-      this.refs.chatBox.handleEvent('BROADCAST_MESSAGE', data)
+      this.chatBoxRef.current.handleEvent('BROADCAST_MESSAGE', data)
     })
 
     this.socket.on('START_GAME_REJECTED', data => {
@@ -67,22 +74,22 @@ export default class RoomPage extends React.Component {
 
     this.socket.on('START_GAME_ACCEPTED', data => {
       this.setState({ stage: 'USER_PLAYING' })
-      this.refs.game.handleEvent('START_GAME_ACCEPTED', data)
+      this.gameRef.current.handleEvent('START_GAME_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_ACCEPTED', data => {
       if (data.gameOverInfo || data.gameOver)
         this.setState({ stage: 'GAME_OVER' })
-      this.refs.game.handleEvent('MOVE_ACCEPTED', data)
+      this.gameRef.current.handleEvent('MOVE_ACCEPTED', data)
     })
 
     this.socket.on('MOVE_REJECTED', data => {
-      this.refs.game.handleEvent('MOVE_REJECTED', data)
+      this.gameRef.current.handleEvent('MOVE_REJECTED', data)
     })
 
     this.socket.on('RESIGN_ACCEPTED', data => {
       this.setState({ stage: 'GAME_OVER' })
-      this.refs.game.handleEvent('RESIGN_ACCEPTED', data)
+      this.gameRef.current.handleEvent('RESIGN_ACCEPTED', data)
     })
   }
 
@@ -90,7 +97,7 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'JOIN_ROOM',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload: { nickname }
       }
     )
@@ -100,20 +107,20 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'SEND_MESSAGE',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload: { text }
       }
     )
   }
 
   onStartGame = () => {
-    this.socket.emit('START_GAME', { roomID: this.roomID })
+    this.socket.emit('START_GAME', { roomID: this.props.roomID })
   }
 
   onResignGame = () => {
     const confirmation = window.confirm("Are you sure you want to resign?")
     if (confirmation) {
-      this.socket.emit('RESIGN', { roomID: this.roomID })
+      this.socket.emit('RESIGN', { roomID: this.props.roomID })
     }
   }
 
@@ -121,7 +128,7 @@ export default class RoomPage extends React.Component {
     this.socket.emit(
       'MOVE',
       {
-        roomID: this.roomID,
+        roomID: this.props.roomID,
         payload
       }
     )
@@ -130,33 +137,33 @@ export default class RoomPage extends React.Component {
   render() {
     const nicknameForm =
     <NicknameForm
-      ref="nicknameForm"
+      ref={this.nicknameFormRef}
       onSubmit={this.onSubmitNickname}
     />
 
     const chatBox =
     <ChatBox
-      ref="chatBox"
+      ref={this.chatBoxRef}
       onSend={this.onSendMessage}
     />
 
     let gameComponent
-    switch (this.gameCode) {
+    switch (this.props.gameCode) {
       case 'TICTACTOE':
-        gameComponent = <TicTacToeGame ref="game" onMove={this.onMove} />
+        gameComponent = <TicTacToeGame ref={this.gameRef} onMove={this.onMove} />
         break
       case 'REVERSI':
-        gameComponent = <ReversiGame ref="game" onMove={this.onMove} />
+        gameComponent = <ReversiGame ref={this.gameRef} onMove={this.onMove} />
         break
       case 'SUDOKU':
-        gameComponent = <SudokuGame ref="game" onMove={this.onMove} />
+        gameComponent = <SudokuGame ref={this.gameRef} onMove={this.onMove} />
         break
       default:
         gameComponent = null
     }
 
     const gameDiv =
-    <div className="bg-blue-200 flex justify-center p-4">
+    <div className="bg-green-100 flex justify-center p-4">
       {gameComponent}
     </div>
 
@@ -180,7 +187,7 @@ export default class RoomPage extends React.Component {
     </div>
 
     const resignButtonDiv =
-    <div className="w-full flex justify-center p-4">
+    <div className="w-full flex justify-center p-4 pb-0">
       <Button
         color="primary"
         variant="contained"
@@ -207,7 +214,7 @@ export default class RoomPage extends React.Component {
         {chatBox}
       </div>
 
-      <div className="w-2/3">
+      <div className="w-2/3 space-y-2">
         {resignButtonDiv}
         {gameDiv}
       </div>
@@ -219,23 +226,48 @@ export default class RoomPage extends React.Component {
         {chatBox}
       </div>
 
-      <div className="w-2/3">
+      <div className="w-2/3 space-y-2">
         {playButtonDiv}
         {gameDiv}
       </div>
     </div>
 
-    switch (this.state.stage) {
-      case 'USER_OUT':
-        return userOutView
-      case 'USER_IN':
-        return userInView
-      case 'USER_PLAYING':
-        return userPlayingView
-      case 'GAME_OVER':
-        return gameOverView
-      default:
-        return null
+    const renderViewByStage = (stage) => {
+      switch (stage) {
+        case 'USER_OUT':
+          return userOutView
+        case 'USER_IN':
+          return userInView
+        case 'USER_PLAYING':
+          return userPlayingView
+        case 'GAME_OVER':
+          return gameOverView
+        default:
+          return null
+      }
     }
+
+    return (
+      <div>
+        <NavBar page='Room' />
+        <Container>
+          <h1 className="text-3xl font-bold">{getGameNameFromCode(this.props.gameCode)} Room</h1>
+          {renderViewByStage(this.state.stage)}
+        </Container>
+      </div>
+    )
+  }
+}
+
+function getGameNameFromCode(code) {
+  switch (code) {
+    case 'TICTACTOE':
+      return 'Tic-tac-toe'
+    case 'REVERSI':
+      return 'Reversi'
+    case 'SUDOKU':
+      return 'Sudoku'
+    default:
+      return ''
   }
 }

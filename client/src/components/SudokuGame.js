@@ -1,7 +1,7 @@
 import React from 'react'
-import UserSpan from './UserSpan'
 import ScoreTable from './ScoreTable'
 import SudokuBoard from './SudokuBoard'
+import ResignationInfo from './ResignationInfo'
 
 export default class SudokuGame extends React.Component {
   constructor(props) {
@@ -58,8 +58,12 @@ export default class SudokuGame extends React.Component {
     }
   }
 
-  handleMoveRejected(data) {
-    this.setState({ blockedCells: data.data.blockedCells })
+  handleMoveRejected(response) {
+    const { message, data } = response
+
+    console.log(message)
+    if (data !== undefined)
+      this.setState({ blockedCells: data.blockedCells })
   }
 
   handleResignAccepted(data) {
@@ -86,18 +90,18 @@ export default class SudokuGame extends React.Component {
     const userInView = null
 
     const userPlayingView =
-    <div>
+    <div className="space-y-2">
       <ScoreTable scores={this.state.scores} />
       {sudokuBoard}
     </div>
 
     const gameOverView =
-    <div>
-      <ScoreTable scores={this.state.scores} />
+    <div className="space-y-2">
       <GameOverInfo
         gameOverByResignation={this.state.gameOverByResignation}
         resigner={this.state.resigner}
       />
+      <ScoreTable scores={this.state.scores} />
       {sudokuBoard}
     </div>
 
@@ -121,7 +125,7 @@ function GameOverInfo(props) {
     <div>
       {
         gameOverByResignation ?
-        <p><UserSpan user={resigner} /> ends the game</p> :
+        <ResignationInfo resigner={resigner} /> :
         <p> Game over! </p>
       }
     </div>

@@ -1,8 +1,19 @@
 const SudokuManager = require('./SudokuManager')
-const parseSudoku = require('./utils')
 const Sudoku = require('./Sudoku')
-const puzzleString = '004300209005009001070060043006002087190007400050083000600000105003508690042910300'
-const solutionString = '864371259325849761971265843436192587198657432257483916689734125713528694542916378'
+const solution = [
+  [3, 8, 4, 7, 5, 2, 1, 9, 6],
+  [7, 2, 8, 9, 1, 4, 6, 5, 3],
+  [6, 7, 5, 8, 3, 9, 4, 1, 2],
+  [4, 5, 7, 3, 8, 1, 2, 6, 9],
+  [5, 9, 3, 1, 6, 8, 7, 2, 4],
+  [2, 3, 6, 5, 9, 7, 8, 4, 1],
+  [8, 6, 1, 2, 4, 5, 9, 3, 7],
+  [9, 1, 2, 4, 7, 6, 3, 8, 5],
+  [1, 4, 9, 6, 2, 3, 5, 7, 8]
+]
+const {
+  CellIsBlockedError, SudokuCellMismatchError, GameHasNotStartedError
+} = require('../../errors')
 
 const users = [
   { socketID: 1, nickname: 'alvin', color: 'RED' },
@@ -40,20 +51,28 @@ test('startGame', () => {
     for (let column = 0; column < 9; column++)
       expect(manager.cellColors[row][column]).toEqual(null)
   }
+
+  expect(manager.isPlaying()).toEqual(true)
 })
 
-test('move with invalid row/column', () => {
+test('move when game has not started', () => {
+  const manager = new SudokuManager()
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrowError(GameHasNotStartedError)
+})
+
+test('move when game throws an error', () => {
   const manager = new SudokuManager()
 
   const mockAssign = jest.fn()
   mockAssign.mockImplementation(() => {
-    throw new Error('Invalid row or column')
+    throw new Error('Some error')
   })
   Sudoku.prototype.assign = mockAssign
 
   manager.startGame(users[0], users)
 
-  expect(() => manager.move(users[0], { row: 0, column: -1, value: 1 })).toThrow('Invalid row or column')
+  expect(() => manager.move(users[0], { row: 0, column: 0, value: 1 })).toThrow('Some error')
   for (let row = 0; row < 9; row++) {
     for (let column = 0; column < 9; column++) {
       expect(manager.userBlockedCells.get(users[0].socketID)[row][column]).toEqual(false)
@@ -66,16 +85,35 @@ test('move with invalid row/column', () => {
   }
 })
 
-test('move where given number mismatch with the solution', () => {
+test('move when game throws SudokuCellMismatchError', () => {
+  const manager = new SudokuManager()
+
+  const mockAssign = jest.fn()
+  mockAssign.mockImplementation(() => {
+    throw new SudokuCellMismatchError
+  })
+  Sudoku.prototype.assign = mockAssign
+
+  manager.startGame(users[0], users)
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrow(SudokuCellMismatchError)
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrow(CellIsBlockedError)
+})
+
+test('move on blocked cell', () => {
+  const manager = new SudokuManager()
+
+  manager.startGame(users[0], users)
+  manager.blockCell(users[0], 0, 0)
+
+  expect(() => manager.move(users[0], {row: 0, column: 0, value: 1})).toThrowError(CellIsBlockedError)
 })
 
 test('move success but game is not over yet', () => {
   const manager = new SudokuManager()
 
-  const board = parseSudoku(puzzleString)
-
   const mockAssign = jest.fn()
-  mockAssign.mockReturnValue(board)
+  mockAssign.mockReturnValue(solution)
   Sudoku.prototype.assign = mockAssign
 
   const mockHasEnded = jest.fn()
@@ -85,7 +123,7 @@ test('move success but game is not over yet', () => {
   manager.startGame(users[0], users)
   const result = manager.move(users[1], { row: 0, column: 0, value: 8 })
 
-  expect(result.board).toEqual(board)
+  expect(result.board).toEqual(solution)
   expect(result.cellColors[0][0]).toEqual(users[1].color)
   expect(result.scores).toEqual([
     { user: users[1], score: 1 },
@@ -97,10 +135,8 @@ test('move success but game is not over yet', () => {
 test('move success and game is over', () => {
   const manager = new SudokuManager()
 
-  const board = parseSudoku(solutionString)
-
   const mockAssign = jest.fn()
-  mockAssign.mockReturnValue(board)
+  mockAssign.mockReturnValue(solution)
   Sudoku.prototype.assign = mockAssign
 
   const mockHasEnded = jest.fn()
@@ -110,11 +146,19 @@ test('move success and game is over', () => {
   manager.startGame(users[0], users)
   const result = manager.move(users[1], { row: 0, column: 0, value: 8 })
 
-  expect(result.board).toEqual(board)
+  expect(result.board).toEqual(solution)
   expect(result.cellColors[0][0]).toEqual(users[1].color)
   expect(result.scores).toEqual([
     { user: users[1], score: 1 },
     { user: users[0], score: 0 }
   ])
   expect(result.gameOver).toEqual(true)
+})
+
+test('resign', () => {
+  const manager = new SudokuManager()
+
+  manager.startGame(users[0], users)
+  expect(manager.resign(users[0])).toEqual({resigner: users[0]})
+  expect(manager.isPlaying()).toEqual(false)
 })

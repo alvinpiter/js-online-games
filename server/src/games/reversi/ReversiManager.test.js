@@ -3,7 +3,7 @@ const {
   RoomIsNotFullError,
   GameHasNotStartedError,
   CellIsNotEmptyError
-} = require('./Errors')
+} = require('../../errors')
 const Reversi = require('./Reversi')
 
 const users = [
@@ -44,8 +44,7 @@ test('startGame success', () => {
 
   const result = manager.startGame(users[0], users)
   for (let r of result) {
-    const user = r.user
-    const payload = r.payload
+    const { user, payload } = r
 
     expect(payload.currentPlayer).toEqual('W')
     expect(payload.board).toEqual(startingBoard)
@@ -54,10 +53,10 @@ test('startGame success', () => {
     expect(payload.scores[0].score).toEqual(2)
     expect(payload.scores[1].score).toEqual(2)
 
-    if (user.socketID === 1)
+    if (user.socketID === users[0].socketID)
       expect(payload.player).toEqual('W')
 
-    if (user.socketID === 2)
+    if (user.socketID === users[1].socketID)
       expect(payload.player).toEqual('B')
   }
 
@@ -171,11 +170,6 @@ test('resign', () => {
   const manager = new ReversiManager()
 
   manager.startGame(users[0], users)
-
-  const mockGetOppositePlayer = jest.fn()
-  mockGetOppositePlayer.mockReturnValue('W')
-  Reversi.prototype.getOppositePlayer = mockGetOppositePlayer
-
-  expect(manager.resign(users[0])).toEqual({ winner: 'W' })
+  expect(manager.resign(users[0])).toEqual({resigner: users[0]})
   expect(manager.isPlaying()).toEqual(false)
 })

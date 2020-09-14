@@ -2,20 +2,22 @@ const Reversi = require('./Reversi')
 const {
   RoomIsNotFullError,
   GameHasNotStartedError
-} = require('./Errors')
+} = require('../../errors')
 
 class ReversiManager {
   constructor() {
     this.game = new Reversi()
     this.userDetails = new Map()
     this.socketToPlayerMap = new Map()
-    this.userScores = new Map()
     this.playing = false
   }
 
   startGame(actor, users) {
     if (users.length !== 2)
       throw new RoomIsNotFullError
+
+    this.userDetails.clear()
+    this.socketToPlayerMap.clear()
 
     this.game.reset()
     this.playing = true
@@ -73,11 +75,11 @@ class ReversiManager {
   }
 
   resign(user) {
-    const player = this.socketToPlayerMap.get(user.socketID)
-
     this.playing = false
 
-    return { winner: this.game.getOppositePlayer(player) }
+    return {
+      resigner: user
+    }
   }
 
   getSortedScores(scoreObj) {

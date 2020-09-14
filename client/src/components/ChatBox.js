@@ -11,6 +11,12 @@ export default class ChatBox extends React.Component {
       messages: [],
       textValue: ""
     }
+
+    this.messagesDivRef = React.createRef()
+  }
+
+  componentDidUpdate() {
+    this.scrollMessagesDivToBottom()
   }
 
   handleEvent(type, data) {
@@ -35,7 +41,7 @@ export default class ChatBox extends React.Component {
   handleJoinRoomAccepted(data) {
     const { users, messages } = data
 
-    this.setState({ users, messages })
+    this.setState({ users, messages }, this.scrollMessagesDivToBottom)
   }
 
   handleJoinRoomAcceptedBroadcast(user) {
@@ -59,22 +65,26 @@ export default class ChatBox extends React.Component {
     let newMessages = this.state.messages.slice()
     newMessages.push(message)
 
-    this.setState({ messages: newMessages })
+    this.setState({ messages: newMessages }, this.scrollMessagesDivToBottom)
+  }
+
+  scrollMessagesDivToBottom = () => {
+    this.messagesDivRef.current.scrollTop = this.messagesDivRef.current.scrollHeight
   }
 
   render() {
     return (
       <div className="space-y-2">
-        <h1 className="text-center"> Chat Box </h1>
+        <h1 className="text-center text-2xl font-bold"> Chat Box </h1>
 
-        <div className="w-full bg-gray-200">
+        <div className="w-full p-2 bg-green-100 border border-black">
           Online users:
           {
             this.state.users.map((user, index) => <span key={index} className="ml-2"><UserSpan user={user} /></span>)
           }
         </div>
 
-        <div className="w-full h-64 overflow-auto bg-gray-200">
+        <div className="w-full h-64 overflow-auto p-2 bg-green-100 border border-black" ref={this.messagesDivRef}>
           {
             this.state.messages.map((msg, index) =>
               <p key={index}><UserSpan user={msg.user}/>: {msg.text}</p>

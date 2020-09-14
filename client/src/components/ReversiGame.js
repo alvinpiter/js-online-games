@@ -1,6 +1,9 @@
 import React from 'react'
 import ReversiBoard from './ReversiBoard'
 import ScoreTable from './ScoreTable'
+import TurnInfo from './TurnInfo'
+import WinnerInfo from './WinnerInfo'
+import ResignationInfo from './ResignationInfo'
 
 export default class ReversiGame extends React.Component {
   constructor(props) {
@@ -67,10 +70,11 @@ export default class ReversiGame extends React.Component {
   }
 
   handleResignAccepted(data) {
+    const { resigner } = data
     this.setState({
       stage: 'GAME_OVER',
       gameOverByResignation: true,
-      winner: data.winner
+      resigner
     })
   }
 
@@ -82,7 +86,7 @@ export default class ReversiGame extends React.Component {
     const userInView = null
 
     const userPlayingView =
-    <div>
+    <div className="space-y-2">
       <TurnInfo
         player={this.state.player}
         currentPlayer={this.state.currentPlayer}
@@ -97,11 +101,12 @@ export default class ReversiGame extends React.Component {
     </div>
 
     const gameOverView =
-    <div>
+    <div className="space-y-2">
       <GameOverInfo
-        currentPlayer={this.state.currentPlayer}
         gameOverByResignation={this.state.gameOverByResignation}
+        resigner={this.state.resigner}
         winner={this.state.winner}
+        player={this.state.player}
       />
       <ScoreTable
         scores={this.state.scores}
@@ -125,34 +130,10 @@ export default class ReversiGame extends React.Component {
   }
 }
 
-function TurnInfo(props) {
-  const { player, currentPlayer } = props
-  return (
-    <div className="text-center">
-      <p> You are playing as <span className="font-bold">{player}</span></p>
-      {
-        player === currentPlayer ?
-        <p> It's your turn </p> :
-        <p> It's your opponent's turn </p>
-      }
-    </div>
-  )
-}
-
-function WinnerInfo(props) {
-  // const { currentPlayer, winner } = props
-  return (<h1> Winner info </h1>)
-}
-
-function ResignationInfo(props) {
-  // const { currentPlayer, winner } = props
-  return (<h2> Resignation info </h2>)
-}
-
 function GameOverInfo(props) {
-  const { currentPlayer, gameOverByResignation, winner } = props
+  const { gameOverByResignation, resigner, winner, player } = props
   if (gameOverByResignation)
-    return <ResignationInfo currentPlayer={currentPlayer} winner={winner} />
+    return <ResignationInfo resigner={resigner} />
   else
-    return <WinnerInfo currentPlayer={currentPlayer} winner={winner} />
+    return <WinnerInfo player={player} winner={winner} />
 }

@@ -1,4 +1,9 @@
 const TicTacToe = require('./TicTacToe')
+const {
+  NotYourTurnError,
+  OutOfBoundsError,
+  CellIsNotEmptyError
+} = require('../../errors')
 
 test('reset', () => {
   const game = new TicTacToe()
@@ -25,7 +30,7 @@ test('move with invalid player', () => {
 
   const move = () => game.move('O', {row: 0, column: 0})
 
-  expect(move).toThrow("It's not your turn")
+  expect(move).toThrowError(NotYourTurnError)
 })
 
 test('move with invalid row or column', () => {
@@ -39,7 +44,7 @@ test('move with invalid row or column', () => {
   ]
 
   for (let move of moves) {
-    expect(move).toThrow("Invalid move")
+    expect(move).toThrowError(OutOfBoundsError)
   }
 })
 
@@ -50,7 +55,7 @@ test('move to occupied cell', () => {
 
   const move = () => game.move('O', {row: 0, column: 0})
 
-  expect(move).toThrow("Cell is not empty")
+  expect(move).toThrowError(CellIsNotEmptyError)
 })
 
 test('move success', () => {

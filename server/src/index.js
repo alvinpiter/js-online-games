@@ -5,7 +5,7 @@ const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 
 const port = 5000
-const RoomManager = require('./RoomManager')
+const RoomManager = require('./room/RoomManager')
 const roomManager = new RoomManager()
 const socketRoomID = new Map()
 
@@ -51,9 +51,9 @@ io.on('connection', socket => {
     console.log(`socket ${socketID} disconnected\n`)
 
     const roomID = socketRoomID.get(socketID)
-    const room = roomManager.get(roomID)
 
     try {
+      const room = roomManager.get(roomID)
       const user = room.removeUser(socketID)
       io.to(roomID).emit('LEFT_ROOM_BROADCAST', user)
     } catch (e) {
@@ -67,9 +67,8 @@ io.on('connection', socket => {
     const roomID = data.roomID
     const nickname = data.payload.nickname
 
-    const room = roomManager.get(roomID)
-
     try {
+      const room = roomManager.get(roomID)
       const users = room.getUsers()
       const user = room.addUser(socketID, nickname)
       const messages = room.getMessages()
@@ -90,9 +89,8 @@ io.on('connection', socket => {
     const roomID = data.roomID
     const text = data.payload.text
 
-    const room = roomManager.get(roomID)
-
     try {
+      const room = roomManager.get(roomID)
       const result = room.addMessage(socketID, text)
       io.to(roomID).emit('BROADCAST_MESSAGE', result)
     } catch (e) {
@@ -105,9 +103,8 @@ io.on('connection', socket => {
 
     const roomID = data.roomID
 
-    const room = roomManager.get(roomID)
-
     try {
+      const room = roomManager.get(roomID)
       const result = room.startGame(socketID)
 
       for (let r of result) {
@@ -126,9 +123,8 @@ io.on('connection', socket => {
 
     const roomID = data.roomID
 
-    const room = roomManager.get(roomID)
-
     try {
+      const room = roomManager.get(roomID)
       const result = room.move(socketID, data.payload)
       io.to(roomID).emit('MOVE_ACCEPTED', result)
     } catch (e) {
@@ -146,9 +142,8 @@ io.on('connection', socket => {
 
     const roomID = data.roomID
 
-    const room = roomManager.get(roomID)
-
     try {
+      const room = roomManager.get(roomID)
       const result = room.resign(socketID)
       io.to(roomID).emit('RESIGN_ACCEPTED', result)
     } catch (e) {

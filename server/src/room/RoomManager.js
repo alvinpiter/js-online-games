@@ -23,7 +23,11 @@ class RoomManager {
   }
 
   get(roomID) {
-    return this.rooms.get(roomID)
+    const room = this.rooms.get(roomID)
+    if (room === undefined)
+      throw new Error('Invalid room')
+    else
+      return room
   }
 }
 
