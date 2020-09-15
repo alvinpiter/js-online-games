@@ -8,6 +8,8 @@ import ReversiGame from '../components/ReversiGame'
 import SudokuGame from '../components/SudokuGame'
 import Container from '../components/Container'
 import NavBar from '../components/NavBar'
+import Spinner from '../components/Spinner'
+import Alert from '@material-ui/lab/Alert'
 
 /*
 There are 4 possible stages:
@@ -25,7 +27,9 @@ export default class RoomPage extends React.Component {
     this.state = {
       user: null,
       stage: 'USER_OUT',
-      startGameError: null
+      startGameError: null,
+      isConnecting: true,
+      socketDisconnected: false
     }
 
     this.nicknameFormRef = React.createRef()
@@ -38,6 +42,18 @@ export default class RoomPage extends React.Component {
     const GAME_SERVER_HOST = process.env.REACT_APP_GAME_SERVER_HOST
 
     this.socket = io(GAME_SERVER_HOST)
+
+    this.socket.on('connect', () => {
+      this.setState({
+        isConnecting: false
+      })
+    })
+
+    this.socket.on('disconnect', () => {
+      this.setState({
+        socketDisconnected: true
+      })
+    })
 
     this.socket.on('JOIN_ROOM_ACCEPTED', data => {
       const { user } = data
@@ -247,12 +263,30 @@ export default class RoomPage extends React.Component {
       }
     }
 
+    const connectedView =
+    <div>
+      {
+        this.state.socketDisconnected ?
+        <Alert severity="error"> Well... this is awkward. You are disconnected from server. There is nothing you can do except create a new room. Sorry... </Alert> :
+        null
+      }
+      {renderViewByStage(this.state.stage)}
+    </div>
+
     return (
       <div>
         <NavBar page='Room' />
         <Container>
           <h1 className="text-3xl font-bold">{getGameNameFromCode(this.props.gameCode)} Room</h1>
-          {renderViewByStage(this.state.stage)}
+          {
+            this.state.isConnecting ?
+            <div>
+              <p className="text-center"> Connecting to server... </p>
+              <Spinner />
+            </div> :
+            connectedView
+          }
+
         </Container>
       </div>
     )
