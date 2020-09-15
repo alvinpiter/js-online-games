@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Autocomplete from '@material-ui/lab/Autocomplete'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -100,9 +100,12 @@ function GamePicker(props) {
 function RoomInfo(props) {
   const { room } = props
   const [copied, setCopied] = useState(false)
+  const textField = useRef(null)
 
   const onCopy = () => {
-    navigator.clipboard.writeText(getRoomURL(room))
+    textField.current.select()
+    document.execCommand("copy")
+
     setCopied(true)
   }
 
@@ -114,6 +117,7 @@ function RoomInfo(props) {
       <p> Room created! Visit and share the link below to your opponent to start playing.</p>
       <div className="flex space-x-2">
         <TextField
+          inputRef={textField}
           value={getRoomURL(room)}
           inputProps={{ readOnly: true }}
           style={{ width: 500 }}
