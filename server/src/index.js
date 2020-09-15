@@ -4,7 +4,7 @@ const app = express()
 const http = require('http').createServer(app)
 const io = require('socket.io')(http)
 
-const port = 5000
+const port = process.env.PORT || 5000
 const RoomManager = require('./room/RoomManager')
 const roomManager = new RoomManager()
 const socketRoomID = new Map()
