@@ -5,25 +5,35 @@ import Button from '@material-ui/core/Button'
 import Container from '../components/Container'
 import Spinner from '../components/Spinner'
 import NavBar from '../components/NavBar'
+import Alert from '@material-ui/lab/Alert'
 
 export default function HomePage(props) {
   const [games, setGames] = useState([])
   const [isLoadingGames, setIsLoadingGames] = useState(true)
+  const [loadingGamesError, setLoadingGamesError] = useState(null)
+
   const [selectedGameCode, setSelectedGameCode] = useState(null)
+
   const [room, setRoom] = useState(null)
   const [isLoadingRoom, setIsLoadingRoom] = useState(false)
+  const [loadingRoomError, setLoadingRoomError] = useState(null)
 
   useEffect(() => {
+    document.title = 'JS Games | Home'
     const loadGames = async () => {
-      const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/games`)
-      const jsonResult = await result.json()
+      try {
+        const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/games`)
+        const jsonResult = await result.json()
 
-      setIsLoadingGames(false)
-      setGames(jsonResult)
+        setIsLoadingGames(false)
+        setGames(jsonResult)
+      } catch (e) {
+        setIsLoadingGames(false)
+        setLoadingGamesError(e)
+      }
     }
 
     loadGames()
-    document.title = 'JS Games | Home'
   }, [])
 
   const onChangeGame = (event, value) => {
@@ -32,17 +42,23 @@ export default function HomePage(props) {
 
   const onClickSubmit = () => {
     const loadRoom = async () => {
-      setIsLoadingRoom(true)
+      try {
+        setIsLoadingRoom(true)
+        setLoadingRoomError(null)
 
-      const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/rooms`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameCode: selectedGameCode })
-      })
-      const jsonResult = await result.json()
+        const result = await fetch(`${process.env.REACT_APP_GAME_SERVER_HOST}/rooms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ gameCode: selectedGameCode })
+        })
+        const jsonResult = await result.json()
 
-      setIsLoadingRoom(false)
-      setRoom(jsonResult)
+        setIsLoadingRoom(false)
+        setRoom(jsonResult)
+      } catch (e) {
+        setIsLoadingRoom(false)
+        setLoadingRoomError(e)
+      }
     }
 
     if (selectedGameCode === null)
@@ -56,19 +72,35 @@ export default function HomePage(props) {
       <NavBar page='Home' />
       <Container>
         {
+          loadingGamesError === null ?
+          null :
+          <Alert severity="error">{loadingGamesError.message}</Alert>
+        }
+
+        {
           isLoadingGames ?
           <Spinner /> :
-          <GamePicker
-            games={games}
-            onChangeGame={onChangeGame}
-            onClickSubmit={onClickSubmit}
-          />
+          <DisplayIfNotError error={loadingGamesError !== null}>
+            <GamePicker
+              games={games}
+              onChangeGame={onChangeGame}
+              onClickSubmit={onClickSubmit}
+            />
+          </DisplayIfNotError>
+        }
+
+        {
+          loadingRoomError === null ?
+          null :
+          <Alert severity="error">{loadingRoomError.message}</Alert>
         }
 
         {
           isLoadingRoom ?
           <Spinner /> :
-          <RoomInfo room={room} />
+          <DisplayIfNotError error={loadingRoomError !== null}>
+            <RoomInfo room={room} />
+          </DisplayIfNotError>
         }
       </Container>
     </div>
@@ -144,5 +176,19 @@ function getRoomURL(room) {
       return `${baseURL}/sudoku/${id}`
     default:
       return baseURL
+  }
+}
+
+function DisplayIfNotError(props) {
+  const { error } = props
+
+  if (error)
+    return null
+  else {
+    return (
+      <div>
+        {props.children}
+      </div>
+    )
   }
 }
