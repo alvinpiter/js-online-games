@@ -158,9 +158,9 @@ class Reversi {
     if (score['W'] === score['B'])
       return null
     else if (score['W'] < score['B'])
-      return 'W'
-    else
       return 'B'
+    else
+      return 'W'
   }
 
   isInsideBoard(row, column) {

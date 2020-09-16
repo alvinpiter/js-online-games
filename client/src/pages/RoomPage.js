@@ -100,6 +100,8 @@ export default class RoomPage extends React.Component {
     })
 
     this.socket.on('MOVE_REJECTED', data => {
+      if (data.data !== undefined && data.data.gameOver)
+        this.setState({ stage: 'GAME_OVER' })
       this.gameRef.current.handleEvent('MOVE_REJECTED', data)
     })
 

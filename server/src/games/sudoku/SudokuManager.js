@@ -71,16 +71,28 @@ class SudokuManager {
       this.cellColors[row][column] = user.color
       this.increaseScore(user)
 
+      const gameOver = this.isGameOver()
+      if (gameOver)
+        this.playing = false
+
       return {
         board,
         cellColors: this.cellColors,
         scores: this.getSortedScores(),
-        gameOver: this.game.hasEnded()
+        gameOver
       }
     } catch (e) {
       if (e instanceof SudokuCellMismatchError) {
         this.blockCell(user, row, column)
-        throw new SudokuCellMismatchError({blockedCells: this.userBlockedCells.get(user.socketID)})
+
+        const gameOver = this.isGameOver()
+        if (gameOver)
+          this.playing = false
+
+        throw new SudokuCellMismatchError({
+          blockedCells: this.userBlockedCells.get(user.socketID),
+          gameOver
+        })
       } else
         throw e
     }
@@ -126,6 +138,25 @@ class SudokuManager {
 
   isPlaying() {
     return this.playing
+  }
+
+  isGameOver() {
+    if (this.game.hasEnded())
+      return true
+
+    const board = this.game.getBoard()
+
+    //Check if there is still a user who has a chance to score
+    for (let row = 0; row < 9; row++) {
+      for (let column = 0; column < 9; column++) {
+        for (let [socketID, blockedCells] of this.userBlockedCells.entries()) {
+          if (board[row][column] === 0 && blockedCells[row][column] === false)
+            return false
+        }
+      }
+    }
+
+    return true
   }
 }
 

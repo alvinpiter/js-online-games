@@ -59,11 +59,16 @@ export default class SudokuGame extends React.Component {
   }
 
   handleMoveRejected(response) {
-    const { message, data } = response
+    const { data } = response
 
-    console.log(message)
-    if (data !== undefined)
-      this.setState({ blockedCells: data.blockedCells })
+    if (data !== undefined) {
+      const { blockedCells, gameOver } = data
+
+      this.setState({ blockedCells })
+      if (gameOver) {
+        this.setState({ stage: 'GAME_OVER', gameOverByResignation: false})
+      }
+    }
   }
 
   handleResignAccepted(data) {
@@ -126,7 +131,9 @@ function GameOverInfo(props) {
       {
         gameOverByResignation ?
         <ResignationInfo resigner={resigner} /> :
-        <p> Game over! </p>
+        <div className="text-xl text-center font-bold">
+          <p> Game over! </p>
+        </div>
       }
     </div>
   )
