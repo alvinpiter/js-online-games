@@ -165,3 +165,48 @@ test('getScore', () => {
     'B': 8
   })
 })
+
+test('getWinner', () => {
+  const bWins = [
+    [null, null, null, null, null, null, null, null],
+    [null,  'B', null,  'B', null,  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B',  'W', null,  'W',  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B', null,  'B', null,  'B',  'B', null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null]
+  ]
+
+  const wWins = [
+    [null, null, null, null, null, null, null, null],
+    [null,  'B', null,  'B', null,  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B',  'W', null,  'W',  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B', null,  'B', null,  'B',  'W', null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null]
+  ]
+
+  const tie = [
+    [null, null, null, null, null, null, null, null],
+    [null,  'B', null,  'B', null,  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B',  'W', null,  'W',  'B', null, null],
+    [null, null,  'W',  'W',  'W', null, null, null],
+    [null,  'B', null,  'B', null,  'B', null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null]
+  ]
+
+  const boards = [bWins, wWins, tie]
+  const expectedResult = ['B', 'W', null]
+
+  for (let i = 0; i < boards.length; i++) {
+    const game = new Reversi()
+    game.setBoard(boards[i])
+
+    expect(game.getWinner()).toEqual(expectedResult[i])
+  }
+})
