@@ -11,6 +11,19 @@ const solution = [
   [9, 1, 2, 4, 7, 6, 3, 8, 5],
   [1, 4, 9, 6, 2, 3, 5, 7, 8]
 ]
+
+const almostSolution = [
+  [0, 8, 4, 7, 5, 2, 1, 9, 6],
+  [7, 2, 8, 9, 1, 4, 6, 5, 3],
+  [6, 7, 5, 8, 3, 9, 4, 1, 2],
+  [4, 5, 7, 3, 8, 1, 2, 6, 9],
+  [5, 9, 3, 1, 6, 8, 7, 2, 4],
+  [2, 3, 6, 5, 9, 7, 8, 4, 1],
+  [8, 6, 1, 2, 4, 5, 9, 3, 7],
+  [9, 1, 2, 4, 7, 6, 3, 8, 5],
+  [1, 4, 9, 6, 2, 3, 5, 7, 8]
+]
+
 const {
   CellIsBlockedError, SudokuCellMismatchError, GameHasNotStartedError
 } = require('../../errors')
@@ -53,6 +66,51 @@ test('startGame', () => {
   }
 
   expect(manager.isPlaying()).toEqual(true)
+})
+
+test('isGameOver when board is full', () => {
+  const manager = new SudokuManager()
+
+  const mockHasEnded = jest.fn()
+  mockHasEnded.mockReturnValue(true)
+  Sudoku.prototype.hasEnded = mockHasEnded
+
+  manager.startGame(users[0], [users[0]])
+
+  expect(manager.isGameOver()).toEqual(true)
+})
+
+test('isGameOver when board is not full but all empty cells already blocked', () => {
+  const manager = new SudokuManager()
+
+  const mockHasEnded = jest.fn()
+  mockHasEnded.mockReturnValue(false)
+  Sudoku.prototype.hasEnded = mockHasEnded
+
+  const mockGetBoard = jest.fn()
+  mockGetBoard.mockReturnValue(almostSolution)
+  Sudoku.prototype.getBoard = mockGetBoard
+
+  manager.startGame(users[0], [users[0]])
+  manager.blockCell(users[0], 0, 0)
+
+  expect(manager.isGameOver()).toEqual(true)
+})
+
+test('isGameOver when game is not over', () => {
+  const manager = new SudokuManager()
+
+  const mockHasEnded = jest.fn()
+  mockHasEnded.mockReturnValue(false)
+  Sudoku.prototype.hasEnded = mockHasEnded
+
+  const mockGetBoard = jest.fn()
+  mockGetBoard.mockReturnValue(almostSolution)
+  Sudoku.prototype.getBoard = mockGetBoard
+
+  manager.startGame(users[0], [users[0]])
+
+  expect(manager.isGameOver()).toEqual(false)
 })
 
 test('move when game has not started', () => {
@@ -153,6 +211,8 @@ test('move success and game is over', () => {
     { user: users[0], score: 0 }
   ])
   expect(result.gameOver).toEqual(true)
+
+  expect(manager.isPlaying()).toEqual(false)
 })
 
 test('resign', () => {
