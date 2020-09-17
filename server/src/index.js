@@ -36,6 +36,10 @@ app.post('/rooms', (req, res) => {
   }
 })
 
+app.get('/rooms/get-count', (req, res) => {
+  res.send({count: roomManager.getCount()})
+})
+
 function log(command, data) {
   console.log(command)
   console.log(data)

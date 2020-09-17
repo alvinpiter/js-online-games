@@ -29,6 +29,10 @@ class RoomManager {
     else
       return room
   }
+
+  getCount() {
+    return this.rooms.size
+  }
 }
 
 module.exports = RoomManager
