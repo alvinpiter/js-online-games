@@ -2,7 +2,7 @@
 
 Link: http://jsog.herokuapp.com/
 
-JSOG (JavaScript Online Games) is a web application where you can play games with your friend(s). There are currently 3 games that you can play, Tic-Tac-Toe, Reversi, and Sudoku. I'll be adding more games later (if I have time), like Tetris. 
+JSOG (JavaScript Online Games) is a web application where you can play games with your friend(s). There are currently 3 games that you can play, Tic-Tac-Toe, Reversi, and Sudoku. I'll be adding more games later (if I have time), like Tetris. The client side is developed using React, while the server side is developed using Node.js.
 
 ## Games
 
